@@ -5,7 +5,7 @@ module RubyClone
   describe "RSync" do
     describe "#command" do
 
-      it "should have Cav as rsync options" do
+      it "should have -Cav as rsync options" do
         rsync = RSync.new('folder', 'backup_folder')
         rsync.command.should ~/$rsync -Cav/
       end

@@ -18,17 +18,21 @@ module RubyClone
   describe "RSync" do
 
     before(:each) do
-      @rsync = RSync.new('folder', 'backup_folder')
+      from_folder = FromFolder.new "/from_folder"
+      to_folder = ToFolder.new "/to_folder"
+
+      profile = Profile.new 'test_profile'
+      profile.from_folder = from_folder
+      profile.to_folder = to_folder
+
+      @rsync = RSync.new
+      @rsync.profiles = profile
     end
 
-    describe "#command" do
+    describe "#rsync_options" do
 
       it "should have -Cav --stats as rsync options" do
-        @rsync.command.should ~/$rsync -Cav --stats/
-      end
-
-      it "should create rsync backup command from folder to backup_folder" do
-        @rsync.command.should == 'rsync -Cav --stats folder backup_folder'
+        @rsync.rsync_options.should == '-Cav --stats'
       end
 
     end
@@ -44,15 +48,15 @@ module RubyClone
         end
       end
 
-      it "should run the backup from 'folder' to 'backup_folder'" do
+      it "should run the backup from '/from_folder' to '/to_folder'" do
         FakerOpen4.stdin.as_null_object
-        FakerOpen4.stdin.should_receive(:puts).with('rsync -Cav --stats folder backup_folder')
+        FakerOpen4.stdin.should_receive(:puts).with('rsync -Cav --stats /from_folder /to_folder')
         FakerOpen4.stdin.should_receive(:close)
 
         FakerOpen4.stdout.should_receive(:read)
         FakerOpen4.stderr.should_receive(:read)
 
-        @rsync.run
+        @rsync.run 'test_profile'
       end
 
     end

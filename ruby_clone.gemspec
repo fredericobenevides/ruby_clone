@@ -15,6 +15,8 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = RubyClone::VERSION
 
+  gem.add_dependency "open4", "~> 1.3.0"
+
   gem.add_development_dependency "guard", "~> 1.3.2"
   gem.add_development_dependency "guard-rspec", "~> 1.2.1"
   gem.add_development_dependency "rspec", "~> 2.11.0"

@@ -17,16 +17,18 @@ module RubyClone
 
   describe "RSync" do
 
+    before(:each) do
+      @rsync = RSync.new('folder', 'backup_folder')
+    end
+
     describe "#command" do
 
       it "should have -Cav --stats as rsync options" do
-        rsync = RSync.new('folder', 'backup_folder')
-        rsync.command.should ~/$rsync -Cav --stats/
+        @rsync.command.should ~/$rsync -Cav --stats/
       end
 
       it "should create rsync backup command from folder to backup_folder" do
-        rsync = RSync.new('folder', 'backup_folder')
-        rsync.command.should == 'rsync -Cav --stats folder backup_folder'
+        @rsync.command.should == 'rsync -Cav --stats folder backup_folder'
       end
 
     end
@@ -34,18 +36,12 @@ module RubyClone
     describe "#run" do
 
       before(:each) do
-        @rsync = RSync.new('folder', 'backup_folder')
         @rsync.instance_eval { @open4 = FakerOpen4 }
 
-        pid = double('pid')
-        stdin = double('stdin')
-        stdout = double('stdout')
-        stderr = double('stderr')
-
-        FakerOpen4.pid = pid
-        FakerOpen4.stdin = stdin
-        FakerOpen4.stdout = stdout
-        FakerOpen4.stderr = stderr
+        FakerOpen4.methods(false).grep(/(.*)=$/) do
+          double_object = double($1)
+          FakerOpen4.send "#{$1}=", double_object
+        end
       end
 
       it "should run the backup from 'folder' to 'backup_folder'" do

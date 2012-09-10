@@ -6,4 +6,4 @@ extend RubyClone::DSL
 
 load ARGV[0]
 
-@rsync.run ARGV[1]
+run_backup ARGV[1]

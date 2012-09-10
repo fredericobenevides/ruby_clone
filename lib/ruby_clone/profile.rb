@@ -1,26 +1,26 @@
 module RubyClone
 
   class FromFolder
-    attr_accessor :folder
+    attr_accessor :path
 
-    def initialize(folder)
-      @folder = folder
+    def initialize(path)
+      @path = path
     end
 
     def to_s
-      @folder
+      @path
     end
   end
 
   class ToFolder
-    attr_accessor :folder
+    attr_accessor :path
 
-    def initialize(folder)
-      @folder = folder
+    def initialize(path)
+      @path = path
     end
 
     def to_s
-      @folder
+      @path
     end
   end
 

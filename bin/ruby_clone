@@ -2,5 +2,10 @@
 
 require 'ruby_clone'
 
-rsync = RubyClone::RSync.new(ARGV[0], ARGV[1])
-rsync.run
+extend RubyClone::DSL
+
+load ARGV[0]
+
+rsync = RubyClone::RSync.new
+rsync.profiles = @profile
+rsync.run ARGV[1]

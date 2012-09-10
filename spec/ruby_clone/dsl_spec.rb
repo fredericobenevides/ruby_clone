@@ -35,7 +35,13 @@ module RubyClone
 
     describe "invalid" do
 
-      it "should raise SyntaxError with message 'Empty Profile not allowed'" do
+      it "should raise SyntaxError with message 'Empty Profile not allowed' for profile with no block" do
+        lambda do
+          DummyClass.profile('backup')
+        end.should raise_error(SyntaxError, 'Empty Profile not allowed')
+      end
+
+      it "should raise SyntaxError with message 'Empty Profile not allowed' for empty block" do
         lambda do
           DummyClass.profile('backup') { }
         end.should raise_error(SyntaxError, 'Empty Profile not allowed')

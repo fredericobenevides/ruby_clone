@@ -21,12 +21,12 @@ module RubyClone
       from_folder = FromFolder.new "/from_folder"
       to_folder = ToFolder.new "/to_folder"
 
-      profile = Profile.new 'test_profile'
-      profile.from_folder = from_folder
-      profile.to_folder = to_folder
+      @profile = Profile.new 'test_profile'
+      @profile.from_folder = from_folder
+      @profile.to_folder = to_folder
 
       @rsync = RSync.new
-      @rsync.profiles = profile
+      @rsync.profiles = @profile
     end
 
     describe "#rsync_options" do
@@ -35,6 +35,18 @@ module RubyClone
         @rsync.rsync_options.should == '-Cav --stats'
       end
 
+    end
+    
+    describe "#last_profile" do
+
+      it "should return the last profile added" do
+        @rsync.last_profile.should == @profile
+
+        other_profile = Profile.new 'other_profile'
+
+        @rsync.profiles = other_profile
+        @rsync.last_profile.should == other_profile
+      end
     end
 
     describe "#run" do

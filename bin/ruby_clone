@@ -6,6 +6,4 @@ extend RubyClone::DSL
 
 load ARGV[0]
 
-rsync = RubyClone::RSync.new
-rsync.profiles = @profile
-rsync.run ARGV[1]
+@rsync.run ARGV[1]

@@ -3,22 +3,30 @@ module RubyClone
   module DSL
 
     def profile(name, &block)
-      @profile = Profile.new(name)
+      @rsync ||= RubyClone::RSync.new
 
-      called_block = block.call if block
-      raise SyntaxError, 'Empty Profile not allowed' if not called_block
+      profile = Profile.new(name)
 
-      @profile
+      if block
+        @rsync.profiles = profile
+        called_block = block.call
+
+        raise SyntaxError, 'Empty Profile not allowed' if not called_block
+      else
+        raise SyntaxError, 'Empty Profile not allowed'
+      end
+
+      profile
     end
 
     def from(folder)
       from_folder = FromFolder.new(folder)
-      @profile.from_folder = from_folder
+      @rsync.last_profile.from_folder = from_folder
     end
 
     def to(folder)
       to_folder = ToFolder.new(folder)
-      @profile.to_folder = to_folder
+      @rsync.last_profile.to_folder = to_folder
     end
 
   end

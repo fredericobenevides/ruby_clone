@@ -14,6 +14,11 @@ module RubyClone
 
     def profiles=(profile)
       @profiles[profile.name] = profile
+      @last_profile = profile
+    end
+
+    def last_profile
+      @last_profile
     end
 
     def run(profile_name)

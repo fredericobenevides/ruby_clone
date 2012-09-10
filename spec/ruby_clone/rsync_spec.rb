@@ -37,6 +37,22 @@ module RubyClone
 
     end
     
+    describe "#rsync_command" do
+
+      it "should create with the default command" do
+        command = @rsync.rsync_command "/from_folder", "/to_folder"
+        command.should == "rsync -Cav --stats /from_folder /to_folder"
+      end
+
+      it "should create with '--exclude' options when setted the excluded path" do
+        @rsync.exclude_path 'exclude1'
+        @rsync.exclude_path 'exclude2'
+
+        command = @rsync.rsync_command "/from_folder", "/to_folder"
+        command.should == "rsync -Cav --stats --exclude=exclude1 --exclude=exclude2 /from_folder /to_folder"
+      end
+    end
+    
     describe "#last_profile" do
 
       it "should return the last profile added" do

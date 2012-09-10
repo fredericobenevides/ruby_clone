@@ -8,6 +8,7 @@ module RubyClone
     attr_accessor :rsync_options
 
     def initialize
+      @exclude_paths = []
       @profiles = {}
       @rsync_options = '-Cav --stats'
     end
@@ -19,6 +20,14 @@ module RubyClone
 
     def last_profile
       @last_profile
+    end
+
+    def exclude_path(path)
+      @exclude_paths << path
+    end
+
+    def rsync_command(from_folder, to_folder)
+      "rsync #{@rsync_options} #{create_exclude_command} #{from_folder} #{to_folder}".gsub(/\s+/, " ")
     end
 
     def run(profile_name)
@@ -37,8 +46,8 @@ module RubyClone
 
    private
 
-    def rsync_command(from_folder, to_folder)
-      "rsync #{@rsync_options} #{from_folder} #{to_folder}"
+    def create_exclude_command
+      @exclude_paths.map { |path| "--exclude=#{path}" }.join(" ") if !@exclude_paths.empty?
     end
   end
 end

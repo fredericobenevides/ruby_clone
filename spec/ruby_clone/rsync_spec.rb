@@ -40,7 +40,7 @@ module RubyClone
     describe "#rsync_command" do
 
       it "should create with the default command" do
-        command = @rsync.rsync_command "/from_folder", "/to_folder"
+        command = @rsync.rsync_command "test_profile"
         command.should == "rsync -Cav --stats /from_folder /to_folder"
       end
 
@@ -48,7 +48,7 @@ module RubyClone
         @rsync.exclude_path 'exclude1'
         @rsync.exclude_path 'exclude2'
 
-        command = @rsync.rsync_command "/from_folder", "/to_folder"
+        command = @rsync.rsync_command "test_profile"
         command.should == "rsync -Cav --stats --exclude=exclude1 --exclude=exclude2 /from_folder /to_folder"
       end
     end

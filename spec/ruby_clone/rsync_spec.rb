@@ -45,8 +45,8 @@ module RubyClone
       end
 
       it "should create with '--exclude' options when setted the excluded path" do
-        @rsync.exclude_path 'exclude1'
-        @rsync.exclude_path 'exclude2'
+        @rsync.exclude_paths = 'exclude1'
+        @rsync.exclude_paths = 'exclude2'
 
         command = @rsync.rsync_command "test_profile"
         command.should == "rsync -Cav --stats --exclude=exclude1 --exclude=exclude2 /from_folder /to_folder"

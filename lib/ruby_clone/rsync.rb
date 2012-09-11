@@ -22,7 +22,7 @@ module RubyClone
       @last_profile
     end
 
-    def exclude_path(path)
+    def exclude_paths=(path)
       @exclude_paths << path
     end
 

@@ -4,7 +4,16 @@ module RubyClone
     attr_accessor :path
 
     def initialize(path)
+      @exclude_paths = []
       @path = path
+    end
+
+    def exclude_paths
+      @exclude_paths
+    end
+
+    def exclude_paths=(path)
+      @exclude_paths << path
     end
 
     def to_s

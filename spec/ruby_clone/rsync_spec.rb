@@ -44,12 +44,35 @@ module RubyClone
         command.should == "rsync -Cav --stats /from_folder /to_folder"
       end
 
-      it "should create with '--exclude' options when setted the excluded path" do
-        @rsync.exclude_paths = 'exclude1'
-        @rsync.exclude_paths = 'exclude2'
+      describe "exclude paths" do
 
-        command = @rsync.rsync_command "test_profile"
-        command.should == "rsync -Cav --stats --exclude=exclude1 --exclude=exclude2 /from_folder /to_folder"
+        it "should create with '--exclude' options when setted the excluded path" do
+          @rsync.exclude_paths = 'exclude1'
+          @rsync.exclude_paths = 'exclude2'
+
+          command = @rsync.rsync_command "test_profile"
+          command.should == "rsync -Cav --stats --exclude=exclude1 --exclude=exclude2 /from_folder /to_folder"
+        end
+
+        it "should insert the exclude paths from the rsync and from the profile if they are setted" do
+          @rsync.exclude_paths = 'exclude1'
+          @rsync.exclude_paths = 'exclude2'
+
+          @rsync.last_profile.from_folder.exclude_paths = 'exclude3'
+          @rsync.last_profile.from_folder.exclude_paths = 'exclude4'
+
+          command = @rsync.rsync_command "test_profile"
+          command.should == "rsync -Cav --stats --exclude=exclude1 --exclude=exclude2 --exclude=exclude3 --exclude=exclude4 /from_folder /to_folder"
+        end
+
+        it "should insert the exclude paths just for the profile when rsync doesn't have it" do
+          @rsync.last_profile.from_folder.exclude_paths = 'exclude3'
+          @rsync.last_profile.from_folder.exclude_paths = 'exclude4'
+
+          command = @rsync.rsync_command "test_profile"
+          command.should == "rsync -Cav --stats --exclude=exclude3 --exclude=exclude4 /from_folder /to_folder"
+        end
+
       end
     end
     

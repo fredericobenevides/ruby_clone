@@ -27,10 +27,11 @@ module RubyClone
     end
 
     def rsync_command(profile_name)
-      from_folder = @profiles[profile_name].from_folder
-      to_folder = @profiles[profile_name].to_folder
+      profile = @profiles[profile_name]
+      from_folder = profile.from_folder
+      to_folder = profile.to_folder
 
-      "rsync #{@rsync_options} #{create_exclude_command} #{from_folder} #{to_folder}".gsub(/\s+/, " ")
+      "rsync #{@rsync_options} #{create_exclude_command(profile)} #{from_folder} #{to_folder}".gsub(/\s+/, " ")
     end
 
     def run(profile_name)
@@ -47,8 +48,20 @@ module RubyClone
 
    private
 
-    def create_exclude_command
-      @exclude_paths.map { |path| "--exclude=#{path}" }.join(" ") if !@exclude_paths.empty?
+    def create_exclude_command(profile)
+      excludes = ""
+      if !@exclude_paths.empty?
+        @exclude_paths.each do |path|
+          excludes << "--exclude=#{path} "
+        end
+      end
+
+      if !profile.from_folder.exclude_paths.empty?
+        profile.from_folder.exclude_paths.each do |path|
+          excludes << "--exclude=#{path} "
+        end
+      end
+      excludes
     end
   end
 end

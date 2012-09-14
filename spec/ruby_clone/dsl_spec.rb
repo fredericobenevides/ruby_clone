@@ -107,6 +107,31 @@ module RubyClone
       end
 
     end
+    
+    describe "print_rsync_command" do
+
+      it "should as default show the command in console" do
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder')
+        end
+
+        rsync = DummyClass.current_rsync
+        rsync.print_rsync_command.should be_true
+      end
+
+      it "should not show the command in console when 'print_rsync_command' is false" do
+        DummyClass.print_rsync_command false
+
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder')
+        end
+
+        rsync = DummyClass.current_rsync
+        rsync.print_rsync_command.should be_false
+      end
+    end
 
   end
 

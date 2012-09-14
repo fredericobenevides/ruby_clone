@@ -1,5 +1,5 @@
 require 'spec_helper'
-
+require 'stringio'
 
 class FakerOpen4
 
@@ -25,7 +25,8 @@ module RubyClone
       @profile.from_folder = from_folder
       @profile.to_folder = to_folder
 
-      @rsync = RSync.new
+      @output = StringIO.new
+      @rsync = RSync.new(@output)
       @rsync.profiles = @profile
     end
 
@@ -97,17 +98,27 @@ module RubyClone
           double_object = double($1)
           FakerOpen4.send "#{$1}=", double_object
         end
-      end
 
-      it "should run the backup from '/from_folder' to '/to_folder'" do
-        FakerOpen4.stdin.as_null_object
         FakerOpen4.stdin.should_receive(:puts).with('rsync -Cav --stats /from_folder /to_folder')
         FakerOpen4.stdin.should_receive(:close)
 
         FakerOpen4.stdout.should_receive(:read)
         FakerOpen4.stderr.should_receive(:read)
+      end
 
+      it "should as default print the rsync command in console" do
         @rsync.run 'test_profile'
+
+        @output.seek 0
+        @output.read.should == "\nrsync -Cav --stats /from_folder /to_folder\n\n"
+      end
+
+      it "should not print the rsync command in console when 'print_rsync_command' is false" do
+        @rsync.print_rsync_command = false
+        @rsync.run 'test_profile'
+
+        @output.seek 0
+        @output.read.should == ""
       end
 
     end

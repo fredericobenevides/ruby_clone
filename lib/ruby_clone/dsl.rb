@@ -4,7 +4,7 @@ module RubyClone
 
     lambda {
 
-      rsync = RubyClone::RSync.new
+      rsync = RubyClone::RSync.new(STDOUT)
       current_object = rsync
 
       define_method :current_rsync do
@@ -12,7 +12,7 @@ module RubyClone
       end
 
       define_method :rsync_new_instance do
-        rsync = RubyClone::RSync.new
+        rsync = RubyClone::RSync.new(STDOUT)
         current_object = rsync
       end
 
@@ -33,6 +33,7 @@ module RubyClone
           raise SyntaxError, 'Empty Profile not allowed'
         end
 
+        current_object = rsync
         profile
       end
 
@@ -54,6 +55,10 @@ module RubyClone
 
       define_method :exclude do |path|
         current_object.exclude_paths = path
+      end
+
+      define_method :print_rsync_command do |value|
+        current_object.print_rsync_command = value
       end
 
     }.call

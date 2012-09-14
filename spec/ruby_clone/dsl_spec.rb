@@ -48,6 +48,66 @@ module RubyClone
       end
     end
 
+    describe "exclude paths" do
+
+      before(:each) do
+        @rsync = DummyClass.rsync_new_instance
+      end
+
+      it "should create exclude paths for all profile if exclude is on the top" do
+        DummyClass.exclude 'exclude_top_path'
+
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder')
+        end
+
+        DummyClass.profile('backup2') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder')
+        end
+
+        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats --exclude=exclude_top_path /from_folder /to_folder'
+      end
+
+      it "should create exclude paths for profile if exclude is not on the top" do
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder') do
+            DummyClass.exclude 'exclude_backup1_path'
+          end
+          DummyClass.to('/to_folder')
+        end
+
+        DummyClass.profile('backup2') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder')
+        end
+
+        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats --exclude=exclude_backup1_path /from_folder /to_folder'
+        @rsync.rsync_command('backup2').should == 'rsync -Cav --stats /from_folder /to_folder'
+      end
+
+      it "should include the exclude path from the top and profile" do
+        DummyClass.exclude 'exclude_top_path'
+
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder') do
+            DummyClass.exclude 'exclude_backup1_path'
+          end
+          DummyClass.to('/to_folder')
+        end
+
+        DummyClass.profile('backup2') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder')
+        end
+
+        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats --exclude=exclude_top_path --exclude=exclude_backup1_path /from_folder /to_folder'
+        @rsync.rsync_command('backup2').should == 'rsync -Cav --stats --exclude=exclude_top_path /from_folder /to_folder'
+      end
+
+    end
+
   end
 
 end

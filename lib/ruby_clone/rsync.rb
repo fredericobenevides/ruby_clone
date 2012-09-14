@@ -31,10 +31,15 @@ module RubyClone
 
     def rsync_command(profile_name)
       profile = @profiles[profile_name]
-      from_folder = profile.from_folder
-      to_folder = profile.to_folder
 
-      "rsync #{@rsync_options} #{create_exclude_command(profile)} #{from_folder} #{to_folder}".gsub(/\s+/, " ")
+      if profile
+        from_folder = profile.from_folder
+        to_folder = profile.to_folder
+
+        "rsync #{@rsync_options} #{create_exclude_command(profile)} #{from_folder} #{to_folder}".gsub(/\s+/, " ")
+      else
+        raise ArgumentError, "Profile not found"
+      end
     end
 
     def run(profile_name)

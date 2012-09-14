@@ -91,34 +91,48 @@ module RubyClone
 
     describe "#run" do
 
-      before(:each) do
-        @rsync.instance_eval { @open4 = FakerOpen4 }
+      describe "valid" do
 
-        FakerOpen4.methods(false).grep(/(.*)=$/) do
-          double_object = double($1)
-          FakerOpen4.send "#{$1}=", double_object
+        before(:each) do
+          @rsync.instance_eval { @open4 = FakerOpen4 }
+
+          FakerOpen4.methods(false).grep(/(.*)=$/) do
+            double_object = double($1)
+            FakerOpen4.send "#{$1}=", double_object
+          end
+
+          FakerOpen4.stdin.should_receive(:puts).with('rsync -Cav --stats /from_folder /to_folder')
+          FakerOpen4.stdin.should_receive(:close)
+
+          FakerOpen4.stdout.should_receive(:read)
+          FakerOpen4.stderr.should_receive(:read)
         end
 
-        FakerOpen4.stdin.should_receive(:puts).with('rsync -Cav --stats /from_folder /to_folder')
-        FakerOpen4.stdin.should_receive(:close)
+        it "should as default print the rsync command in console" do
+          @rsync.run 'test_profile'
 
-        FakerOpen4.stdout.should_receive(:read)
-        FakerOpen4.stderr.should_receive(:read)
+          @output.seek 0
+          @output.read.should == "\nrsync -Cav --stats /from_folder /to_folder\n\n"
+        end
+
+        it "should not print the rsync command in console when 'print_rsync_command' is false" do
+          @rsync.print_rsync_command = false
+          @rsync.run 'test_profile'
+
+          @output.seek 0
+          @output.read.should == ""
+        end
+
       end
 
-      it "should as default print the rsync command in console" do
-        @rsync.run 'test_profile'
+      describe "invalid" do
 
-        @output.seek 0
-        @output.read.should == "\nrsync -Cav --stats /from_folder /to_folder\n\n"
-      end
+        it "should raise ArgumentError when trying to run a profile that doesn't exist" do
+          lambda do
+            @rsync.run 'any'
+          end.should raise_error(ArgumentError, "Profile not found")
+        end
 
-      it "should not print the rsync command in console when 'print_rsync_command' is false" do
-        @rsync.print_rsync_command = false
-        @rsync.run 'test_profile'
-
-        @output.seek 0
-        @output.read.should == ""
       end
 
     end

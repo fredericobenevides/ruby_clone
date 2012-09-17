@@ -18,12 +18,12 @@ module RubyClone
   describe "RSync" do
 
     before(:each) do
-      from_folder = FromFolder.new "/from_folder"
-      to_folder = ToFolder.new "/to_folder"
+      @from_folder = FromFolder.new "/from_folder"
+      @to_folder = ToFolder.new "/to_folder"
 
       @profile = Profile.new 'test_profile'
-      @profile.from_folder = from_folder
-      @profile.to_folder = to_folder
+      @profile.from_folder = @from_folder
+      @profile.to_folder = @to_folder
 
       @output = StringIO.new
       @rsync = RSync.new(@output)
@@ -131,6 +131,26 @@ module RubyClone
           lambda do
             @rsync.run 'any'
           end.should raise_error(ArgumentError, "Profile not found")
+        end
+
+        it "should raise SyntaxError with message 'Empty Profile not allowed for profile with no 'from folder''" do
+          lambda do
+            profile = Profile.new 'no_from_folder'
+            profile.to_folder = @to_folder
+            @rsync.profiles = profile
+
+            @rsync.run 'no_from_folder'
+          end.should raise_error(SyntaxError, "Empty Profile not allowed for profile with no 'from folder'")
+        end
+
+        it "should raise SyntaxError with message 'Empty Profile not allowed for profile with no 'to folder''" do
+          lambda do
+            profile = Profile.new 'no_to_folder'
+            profile.from_folder = @from_folder
+            @rsync.profiles = profile
+
+            @rsync.run 'no_to_folder'
+          end.should raise_error(SyntaxError, "Empty Profile not allowed for profile with no 'to folder'")
         end
 
       end

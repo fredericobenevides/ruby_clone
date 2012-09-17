@@ -30,7 +30,7 @@ module RubyClone
     end
 
     def rsync_command(profile_name)
-      profile = @profiles[profile_name]
+      profile = @profiles[profile_name.to_s]
 
       if profile
         from_folder = profile.from_folder

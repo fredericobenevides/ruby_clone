@@ -108,6 +108,45 @@ module RubyClone
           FakerOpen4.stderr.should_receive(:read)
         end
 
+        describe "profile of string type" do
+
+          before(:each) do
+            profile = Profile.new 'profile_string'
+            profile.from_folder = @from_folder
+            profile.to_folder = @to_folder
+
+            @rsync.profiles = profile
+          end
+
+          it "should run using profile as string" do
+            @rsync.run 'profile_string'
+          end
+
+          it "should run using profile as symbol" do
+            @rsync.run :profile_string
+          end
+        end
+
+        describe "profile of symbol type" do
+
+          before(:each) do
+            profile = Profile.new :profile_symbol
+            profile.from_folder = @from_folder
+            profile.to_folder = @to_folder
+
+            @rsync.profiles = profile
+          end
+
+          it "should run using profile as string" do
+            @rsync.run 'profile_symbol'
+          end
+
+          it "should run using profile as symbol" do
+            @rsync.run :profile_symbol
+          end
+
+        end
+
         it "should as default print the rsync command in console" do
           @rsync.run 'test_profile'
 

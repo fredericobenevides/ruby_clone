@@ -39,7 +39,7 @@ module RubyClone
     attr_accessor :to_folder
 
     def initialize(name)
-      @name = name
+      @name = name.to_s
     end
 
     def to_s

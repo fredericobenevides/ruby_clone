@@ -6,12 +6,12 @@ module RubyClone
 
     attr_accessor :profiles
     attr_accessor :rsync_options
-    attr_accessor :print_rsync_command
+    attr_accessor :show_rsync_command
 
     def initialize(output)
       @exclude_paths = []
       @output = output
-      @print_rsync_command = true
+      @show_rsync_command = true
       @profiles = {}
       @rsync_options = '-Cav --stats'
     end
@@ -47,7 +47,7 @@ module RubyClone
 
     def run(profile_name)
       rsync_command = rsync_command(profile_name)
-      @output.puts "\n#{rsync_command}\n\n" if @print_rsync_command
+      @output.puts "\n#{rsync_command}\n\n" if @show_rsync_command
 
       open4 = @open4 || Open4
 

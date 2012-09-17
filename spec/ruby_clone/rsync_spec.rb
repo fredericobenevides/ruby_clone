@@ -147,15 +147,15 @@ module RubyClone
 
         end
 
-        it "should as default print the rsync command in console" do
+        it "should as default show the rsync command in console" do
           @rsync.run 'test_profile'
 
           @output.seek 0
           @output.read.should == "\nrsync -Cav --stats /from_folder /to_folder\n\n"
         end
 
-        it "should not print the rsync command in console when 'print_rsync_command' is false" do
-          @rsync.print_rsync_command = false
+        it "should not print the rsync command in console when 'show_rsync_command' is false" do
+          @rsync.show_rsync_command = false
           @rsync.run 'test_profile'
 
           @output.seek 0

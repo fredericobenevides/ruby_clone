@@ -47,8 +47,8 @@ module RubyClone
         current_object = rsync
       end
 
-      define_method :to do |folder, &block|
-        to_folder = ToFolder.new(folder)
+      define_method :to do |folder, options = {}, &block|
+        to_folder = ToFolder.new(folder, options)
         current_object = to_folder
 
         rsync.last_profile.to_folder = to_folder

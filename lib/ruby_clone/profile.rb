@@ -25,8 +25,18 @@ module RubyClone
     attr_accessor :backup
     attr_accessor :path
 
-    def initialize(path)
+    def initialize(path, options = {})
       @path = path
+      @options = options
+    end
+
+    def to_command
+      command = ""
+      command << "--delete " if @options[:delete]
+      command << "--delete-excluded " if @options[:delete_excluded]
+
+      command << backup.to_command if backup
+      command.strip
     end
 
     def to_s

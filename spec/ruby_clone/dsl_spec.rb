@@ -131,6 +131,36 @@ module RubyClone
       end
     end
 
+    describe "#to" do
+
+      it "should create the following command 'rsync -Cav --stats /from_folder /to_folder' with no options setted" do
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder')
+        end
+
+        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats /from_folder /to_folder'
+      end
+
+      it "should create the following command 'rsync -Cav --stats --delete /from_folder /to_folder' when options 'delete' is setted" do
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder', delete: true)
+        end
+
+        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats --delete /from_folder /to_folder'
+      end
+
+      it "should create the following command 'rsync -Cav --stats --delete /from_folder /to_folder' when options 'delete_excluded' is setted" do
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder', delete_excluded: true)
+        end
+
+        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats --delete-excluded /from_folder /to_folder'
+      end
+    end
+
     describe "#backup" do
 
       it "should include the backup commands when the backup is setted" do

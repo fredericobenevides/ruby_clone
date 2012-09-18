@@ -71,18 +71,8 @@ module RubyClone
 
     def create_exclude_command(profile)
       excludes = ""
-      if !@exclude_paths.empty?
-        @exclude_paths.each do |path|
-          excludes << "--exclude=#{path} "
-        end
-      end
-
-      if !profile.from_folder.exclude_paths.empty?
-        profile.from_folder.exclude_paths.each do |path|
-          excludes << "--exclude=#{path} "
-        end
-      end
-      excludes
+      excludes << @exclude_paths.map {|e| "--exclude=#{e}" }.join(" ")
+      excludes << " #{profile.from_folder.to_command}"
     end
   end
 end

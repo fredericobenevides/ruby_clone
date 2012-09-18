@@ -2,6 +2,25 @@ require 'spec_helper'
 
 module RubyClone
 
+  describe "FromFolder" do
+
+    describe "#to_command" do
+
+      it "should as default return empty string" do
+        from_folder = FromFolder.new('/from_folder')
+        from_folder.to_command.should be_empty
+      end
+
+      it "should return '--exclude' when added" do
+        from_folder = FromFolder.new('/from_folder')
+        from_folder.exclude_paths = '/exclude_path1'
+        from_folder.exclude_paths = '/exclude_path2'
+
+        from_folder.to_command.should == '--exclude=/exclude_path1 --exclude=/exclude_path2'
+      end
+    end
+  end
+
   describe "ToFolder" do
 
     describe "#to_command" do

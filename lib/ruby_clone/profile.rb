@@ -8,12 +8,12 @@ module RubyClone
       @path = path
     end
 
-    def exclude_paths
-      @exclude_paths
-    end
-
     def exclude_paths=(path)
       @exclude_paths << path
+    end
+
+    def to_command
+      @exclude_paths.map {|e| "--exclude=#{e}" }.join(" ")
     end
 
     def to_s

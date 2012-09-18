@@ -78,12 +78,44 @@ module RubyClone
       describe "ToFolder association" do
 
         it "should call to_folder#to_commands" do
-          to_folder = double(:to_folder)
+          to_folder = double(:to_folder).as_null_object
           @profile.to_folder = to_folder
 
 
           to_folder.should_receive :to_command
           @rsync.rsync_command "test_profile"
+        end
+
+      end
+
+      describe "using ssh" do
+
+        it "should have the ssh in the rsync command when FromFolder is using ssh" do
+          from_folder = FromFolder.new "/from_folder", ssh: "user@server"
+          @profile.from_folder = from_folder
+
+          command = @rsync.rsync_command "test_profile"
+          command.should == "rsync -Cav --stats -e ssh user@server:/from_folder /to_folder"
+        end
+
+        it "should have the ssh in the rsync command when ToFolder is using ssh" do
+          to_folder = ToFolder.new "/to_folder", ssh: "user@server"
+          @profile.to_folder = to_folder
+
+          command = @rsync.rsync_command "test_profile"
+          command.should == "rsync -Cav --stats -e ssh /from_folder user@server:/to_folder"
+        end
+
+        it "should raise SyntaxError if the source and destination is ssh" do
+          lambda do
+            from_folder = FromFolder.new "/from_folder", ssh: "user@server"
+            @profile.from_folder = from_folder
+
+            to_folder = ToFolder.new "/to_folder", ssh: "user@server"
+            @profile.to_folder = to_folder
+
+            @rsync.rsync_command "test_profile"
+          end.should raise_error(SyntaxError, 'The source and destination cannot both be remote.')
         end
       end
     end

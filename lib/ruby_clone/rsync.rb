@@ -64,6 +64,8 @@ module RubyClone
 
       command << "#{create_exclude_command(profile)} "
       command << "#{profile.to_folder.to_command} "
+
+      command << "#{create_ssh_command(profile)} "
       command << "#{profile.from_folder} #{profile.to_folder}"
 
       command.gsub(/\s+/, " ")
@@ -73,6 +75,17 @@ module RubyClone
       excludes = ""
       excludes << @exclude_paths.map {|e| "--exclude=#{e}" }.join(" ")
       excludes << " #{profile.from_folder.to_command}"
+    end
+
+    def create_ssh_command(profile)
+      from_folder = profile.from_folder
+      to_folder = profile.to_folder
+
+      if from_folder.ssh? && to_folder.ssh?
+        raise SyntaxError, 'The source and destination cannot both be remote.'
+      elsif from_folder.ssh? || to_folder.ssh?
+        "-e ssh"
+      end
     end
   end
 end

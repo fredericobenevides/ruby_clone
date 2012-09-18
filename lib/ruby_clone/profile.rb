@@ -3,8 +3,9 @@ module RubyClone
   class FromFolder
     attr_accessor :path
 
-    def initialize(path)
+    def initialize(path, options = {})
       @exclude_paths = []
+      @options = options
       @path = path
     end
 
@@ -16,8 +17,17 @@ module RubyClone
       @exclude_paths.map {|e| "--exclude=#{e}" }.join(" ")
     end
 
+    def ssh?
+     if @options[:ssh]
+       true
+     else
+       false
+     end
+    end
+
     def to_s
-      @path
+      return "#{@options[:ssh]}:#{@path}" if @options[:ssh]
+      return @path if not @options[:ssh]
     end
   end
 
@@ -39,8 +49,17 @@ module RubyClone
       command.strip
     end
 
+    def ssh?
+      if @options[:ssh]
+        true
+      else
+        false
+      end
+    end
+
     def to_s
-      @path
+      return "#{@options[:ssh]}:#{@path}" if @options[:ssh]
+      return @path if not @options[:ssh]
     end
   end
 

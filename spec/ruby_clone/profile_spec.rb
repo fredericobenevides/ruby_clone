@@ -4,6 +4,19 @@ module RubyClone
 
   describe "FromFolder" do
 
+    describe "#ssh?" do
+
+      it "should return true if it has the option ssh setted" do
+        from_folder = FromFolder.new('/from_folder', ssh: 'user@server')
+        from_folder.ssh?.should be_true
+      end
+
+      it "should return false if it doesn't have the option ssh setted" do
+        from_folder = FromFolder.new('/from_folder')
+        from_folder.ssh?.should be_false
+      end
+    end
+
     describe "#to_command" do
 
       it "should as default return empty string" do
@@ -19,9 +32,35 @@ module RubyClone
         from_folder.to_command.should == '--exclude=/exclude_path1 --exclude=/exclude_path2'
       end
     end
+
+    describe "#to_s" do
+
+      it "should return just the path name if ssh is not setted" do
+        from_folder = FromFolder.new('/from_folder')
+        from_folder.to_s.should == '/from_folder'
+      end
+
+      it "should return just the path name if ssh is setted" do
+        from_folder = FromFolder.new('/from_folder', ssh: 'user@server')
+        from_folder.to_s.should == 'user@server:/from_folder'
+      end
+    end
   end
 
   describe "ToFolder" do
+
+    describe "#ssh?" do
+
+      it "should return true if it has the option ssh setted" do
+        from_folder = FromFolder.new('/from_folder', ssh: 'user@server')
+        from_folder.ssh?.should be_true
+      end
+
+      it "should return false if it doesn't have the option ssh setted" do
+        from_folder = FromFolder.new('/from_folder')
+        from_folder.ssh?.should be_false
+      end
+    end
 
     describe "#to_command" do
 
@@ -49,6 +88,19 @@ module RubyClone
           to_folder.to_command.should == "--delete -b --backup-dir=/backup"
         end
 
+      end
+    end
+
+    describe "#to_s" do
+
+      it "should return just the path name if ssh is not setted" do
+        to_folder = ToFolder.new('/to_folder')
+        to_folder.to_s.should == '/to_folder'
+      end
+
+      it "should return just the path name if ssh is setted" do
+        to_folder = ToFolder.new('/to_folder', ssh: 'user@server')
+        to_folder.to_s.should == 'user@server:/to_folder'
       end
     end
   end

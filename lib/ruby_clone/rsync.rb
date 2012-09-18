@@ -39,7 +39,7 @@ module RubyClone
         raise SyntaxError, "Empty Profile not allowed for profile with no 'from folder'" unless from_folder
         raise SyntaxError, "Empty Profile not allowed for profile with no 'to folder'" unless to_folder
 
-        "rsync #{@rsync_options} #{create_exclude_command(profile)} #{from_folder} #{to_folder}".gsub(/\s+/, " ")
+        "rsync #{@rsync_options} #{create_exclude_command(profile)} #{create_backup_command(profile)} #{from_folder} #{to_folder}".gsub(/\s+/, " ")
       else
         raise ArgumentError, "Profile not found"
       end
@@ -76,6 +76,11 @@ module RubyClone
         end
       end
       excludes
+    end
+
+    def create_backup_command(profile)
+      backup = profile.to_folder.backup
+      backup.to_command if backup
     end
   end
 end

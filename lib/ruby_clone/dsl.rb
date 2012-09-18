@@ -44,13 +44,22 @@ module RubyClone
         rsync.last_profile.from_folder = from_folder
 
         block.call if block
+        current_object = rsync
       end
 
-      define_method :to do |folder|
+      define_method :to do |folder, &block|
         to_folder = ToFolder.new(folder)
         current_object = to_folder
 
         rsync.last_profile.to_folder = to_folder
+
+        block.call if block
+        current_object = rsync
+      end
+
+      define_method :backup do |path, options = {}|
+        backup = Backup.new(path, options)
+        current_object.backup = backup
       end
 
       define_method :exclude do |path|

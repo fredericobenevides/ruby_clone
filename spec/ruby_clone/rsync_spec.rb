@@ -74,6 +74,17 @@ module RubyClone
           command.should == "rsync -Cav --stats --exclude=exclude3 --exclude=exclude4 /from_folder /to_folder"
         end
 
+        describe "backup" do
+
+          it "should created the commands from the backup when ToFolder have it" do
+            backup = Backup.new('/backup')
+            @to_folder.backup = backup
+
+            command = @rsync.rsync_command "test_profile"
+            command.should == "rsync -Cav --stats -b --backup-dir=/backup /from_folder /to_folder"
+          end
+        end
+
       end
     end
     

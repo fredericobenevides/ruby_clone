@@ -10,6 +10,10 @@ module RubyClone
       DummyClass.extend RubyClone::DSL
     end
 
+    before(:each) do
+      @rsync = DummyClass.rsync_new_instance
+    end
+
     describe "valid" do
 
       before(:each) do
@@ -49,10 +53,6 @@ module RubyClone
     end
 
     describe "exclude paths" do
-
-      before(:each) do
-        @rsync = DummyClass.rsync_new_instance
-      end
 
       it "should create exclude paths for all profile if exclude is on the top" do
         DummyClass.exclude 'exclude_top_path'
@@ -116,8 +116,7 @@ module RubyClone
           DummyClass.to('/to_folder')
         end
 
-        rsync = DummyClass.current_rsync
-        rsync.show_rsync_command.should be_true
+        @rsync.show_rsync_command.should be_true
       end
 
       it "should not show the command in console when 'print_rsync_command' is false" do
@@ -128,8 +127,32 @@ module RubyClone
           DummyClass.to('/to_folder')
         end
 
-        rsync = DummyClass.current_rsync
-        rsync.show_rsync_command.should be_false
+        @rsync.show_rsync_command.should be_false
+      end
+    end
+
+    describe "#backup" do
+
+      it "should include the backup commands when the backup is setted" do
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder') do
+            DummyClass.backup('/backup_folder')
+          end
+        end
+
+        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats -b --backup-dir=/backup_folder /from_folder /to_folder'
+      end
+
+      it "should accepted backup with options" do
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder') do
+            DummyClass.backup('/backup_folder', suffix: 'my_suffix', delete_excluded: true)
+          end
+        end
+
+        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats -b --suffix=my_suffix --backup-dir=/backup_folder /from_folder /to_folder'
       end
     end
 

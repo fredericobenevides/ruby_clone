@@ -22,6 +22,7 @@ module RubyClone
   end
 
   class ToFolder
+    attr_accessor :backup
     attr_accessor :path
 
     def initialize(path)
@@ -44,6 +45,28 @@ module RubyClone
 
     def to_s
       @name
+    end
+  end
+
+  class Backup
+    attr_accessor :path
+
+    def initialize(path, options = {})
+      @options = options
+      @path = path
+    end
+
+    def suffix
+      suffix = @options[:suffix]
+      "--suffix=#{suffix}" if suffix
+    end
+
+    def to_command
+      "-b #{suffix} --backup-dir=#{path}".gsub(/\s+/, " ")
+    end
+
+    def to_s
+      @path
     end
   end
 

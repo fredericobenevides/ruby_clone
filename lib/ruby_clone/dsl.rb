@@ -34,7 +34,6 @@ module RubyClone
         end
 
         current_object = rsync
-        profile
       end
 
       define_method :from do |folder, options = {}, &block|

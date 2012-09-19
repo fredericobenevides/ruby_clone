@@ -2,113 +2,54 @@ require 'spec_helper'
 
 module RubyClone
 
-  describe "Profile" do
+  describe "DSL" do
 
     before(:all) do
       class DummyClass
       end
       DummyClass.extend RubyClone::DSL
+
+      @rsync_options = '-Cav --stats'
+      @rsync_command = "rsync #{@rsync_options}"
+      @folders = "/from_folder /to_folder"
     end
 
     before(:each) do
       @rsync = DummyClass.rsync_new_instance
     end
 
-    describe "valid" do
+    describe "Creating a Profile" do
 
-      before(:each) do
-        @profile = DummyClass.profile('backup') do
-          DummyClass.from('/from_folder')
-          DummyClass.to('/to_folder')
-        end
-      end
+      describe "valid" do
 
-      it "should create with name 'backup'" do
-        @profile.name.should == 'backup'
-      end
-
-      it "should create from folder with name '/from_folder' " do
-        @profile.from_folder.path.should == '/from_folder'
-      end
-
-      it "should create to folder with name '/to_folder' " do
-        @profile.to_folder.path.should == '/to_folder'
-      end
-
-    end
-
-    describe "invalid" do
-
-      it "should raise SyntaxError with message 'Empty Profile not allowed' for profile with no block" do
-        lambda do
-          DummyClass.profile('backup')
-        end.should raise_error(SyntaxError, 'Empty Profile not allowed')
-      end
-
-      it "should raise SyntaxError with message 'Empty Profile not allowed' for empty block" do
-        lambda do
-          DummyClass.profile('backup') { }
-        end.should raise_error(SyntaxError, 'Empty Profile not allowed')
-      end
-    end
-
-    describe "exclude paths" do
-
-      it "should create exclude paths for all profile if exclude is on the top" do
-        DummyClass.exclude 'exclude_top_path'
-
-        DummyClass.profile('backup1') do
-          DummyClass.from('/from_folder')
-          DummyClass.to('/to_folder')
-        end
-
-        DummyClass.profile('backup2') do
-          DummyClass.from('/from_folder')
-          DummyClass.to('/to_folder')
-        end
-
-        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats --exclude=exclude_top_path /from_folder /to_folder'
-      end
-
-      it "should create exclude paths for profile if exclude is not on the top" do
-        DummyClass.profile('backup1') do
-          DummyClass.from('/from_folder') do
-            DummyClass.exclude 'exclude_backup1_path'
+        it "should create the following command 'rsync -Cav --stats /from_folder /to_folder'" do
+          DummyClass.profile('backup1') do
+            DummyClass.from('/from_folder')
+            DummyClass.to('/to_folder')
           end
-          DummyClass.to('/to_folder')
+
+          @rsync.rsync_command('backup1').should == "#{@rsync_command} #{@folders}"
         end
 
-        DummyClass.profile('backup2') do
-          DummyClass.from('/from_folder')
-          DummyClass.to('/to_folder')
-        end
-
-        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats --exclude=exclude_backup1_path /from_folder /to_folder'
-        @rsync.rsync_command('backup2').should == 'rsync -Cav --stats /from_folder /to_folder'
       end
 
-      it "should include the exclude path from the top and profile" do
-        DummyClass.exclude 'exclude_top_path'
+      describe "invalid" do
 
-        DummyClass.profile('backup1') do
-          DummyClass.from('/from_folder') do
-            DummyClass.exclude 'exclude_backup1_path'
-          end
-          DummyClass.to('/to_folder')
+        it "should raise SyntaxError with message 'Empty Profile not allowed' for profile with no block" do
+          lambda do
+            DummyClass.profile('backup')
+          end.should raise_error(SyntaxError, 'Empty Profile not allowed')
         end
 
-        DummyClass.profile('backup2') do
-          DummyClass.from('/from_folder')
-          DummyClass.to('/to_folder')
+        it "should raise SyntaxError with message 'Empty Profile not allowed' for empty block" do
+          lambda do
+            DummyClass.profile('backup') { }
+          end.should raise_error(SyntaxError, 'Empty Profile not allowed')
         end
-
-        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats --exclude=exclude_top_path --exclude=exclude_backup1_path /from_folder /to_folder'
-        @rsync.rsync_command('backup2').should == 'rsync -Cav --stats --exclude=exclude_top_path /from_folder /to_folder'
       end
-
     end
-    
-    describe "show_rsync_command" do
+
+    describe "#show_rsync_command" do
 
       it "should as default show the command in console" do
         DummyClass.profile('backup1') do
@@ -131,34 +72,94 @@ module RubyClone
       end
     end
 
-    describe "#to" do
+    describe "#from" do
 
-      it "should create the following command 'rsync -Cav --stats /from_folder /to_folder' with no options setted" do
+      it "should create exclude paths just for the profile 'backup1' if exclude DSL is not on the top" do
         DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder') do
+            DummyClass.exclude '/exclude_path1'
+          end
+          DummyClass.to('/to_folder')
+        end
+
+        DummyClass.profile('backup2') do
           DummyClass.from('/from_folder')
           DummyClass.to('/to_folder')
         end
 
-        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats /from_folder /to_folder'
+        @rsync.rsync_command('backup1').should == "#{@rsync_command} --exclude=/exclude_path1 #{@folders}"
+        @rsync.rsync_command('backup2').should == "#{@rsync_command} #{@folders}"
       end
 
-      it "should create the following command 'rsync -Cav --stats --delete /from_folder /to_folder' when options 'delete' is setted" do
+      it "should have the following options '-e ssh user@server:/from_folder /to_folder' when is ssh" do
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder', ssh: "user@server")
+          DummyClass.to('/to_folder')
+        end
+
+        @rsync.rsync_command('backup1').should == "#{@rsync_command} -e ssh user@server:/from_folder /to_folder"
+      end
+    end
+
+    describe "#to" do
+
+      it "should have '--delete' when options 'delete' is setted" do
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder')
           DummyClass.to('/to_folder', delete: true)
         end
 
-        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats --delete /from_folder /to_folder'
+        @rsync.rsync_command('backup1').should == "#{@rsync_command} --delete #{@folders}"
       end
 
-      it "should create the following command 'rsync -Cav --stats --delete /from_folder /to_folder' when options 'delete_excluded' is setted" do
+      it "should have '--delete-excluded' when options 'delete_excluded' is setted" do
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder')
           DummyClass.to('/to_folder', delete_excluded: true)
         end
 
-        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats --delete-excluded /from_folder /to_folder'
+        @rsync.rsync_command('backup1').should == "#{@rsync_command} --delete-excluded #{@folders}"
       end
+    end
+
+    describe "#exclude" do
+
+      it "should create exclude paths for all profiles if exclude DSL is on the top" do
+        DummyClass.exclude '/exclude_top_path'
+
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder')
+        end
+
+        DummyClass.profile('backup2') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder')
+        end
+
+        @rsync.rsync_command('backup1').should == "#{@rsync_command} --exclude=/exclude_top_path #{@folders}"
+        @rsync.rsync_command('backup2').should == "#{@rsync_command} --exclude=/exclude_top_path #{@folders}"
+      end
+
+      it "should include the exclude path from the top and profile if exclude DSL are setted in the top and in profile" do
+        DummyClass.exclude 'exclude_top_path'
+
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder') do
+            DummyClass.exclude '/exclude_path1'
+          end
+          DummyClass.to('/to_folder')
+        end
+
+        DummyClass.profile('backup2') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder')
+        end
+
+        @rsync.rsync_command('backup1').should == "#{@rsync_command} --exclude=exclude_top_path --exclude=/exclude_path1 #{@folders}"
+        @rsync.rsync_command('backup2').should == "#{@rsync_command} --exclude=exclude_top_path #{@folders}"
+      end
+
     end
 
     describe "#backup" do
@@ -171,21 +172,19 @@ module RubyClone
           end
         end
 
-        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats -b --backup-dir=/backup_folder /from_folder /to_folder'
+        @rsync.rsync_command('backup1').should == "#{@rsync_command} -b --backup-dir=/backup_folder #{@folders}"
       end
 
-      it "should accepted backup with options" do
+      it "should include the suffix when the option is setted" do
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder')
           DummyClass.to('/to_folder') do
-            DummyClass.backup('/backup_folder', suffix: 'my_suffix', delete_excluded: true)
+            DummyClass.backup('/backup_folder', suffix: 'my_suffix')
           end
         end
 
-        @rsync.rsync_command('backup1').should == 'rsync -Cav --stats -b --suffix=my_suffix --backup-dir=/backup_folder /from_folder /to_folder'
+        @rsync.rsync_command('backup1').should == "#{@rsync_command} -b --suffix=my_suffix --backup-dir=/backup_folder #{@folders}"
       end
     end
-
   end
-
 end

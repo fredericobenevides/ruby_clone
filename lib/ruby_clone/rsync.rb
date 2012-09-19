@@ -43,13 +43,13 @@ module RubyClone
     end
 
     def run(profile_name)
-      rsync_command = rsync_command(profile_name)
-      @output.puts "\n#{rsync_command}\n\n" if @show_rsync_command
+      command = rsync_command(profile_name)
+      @output.puts "\n#{command}\n\n" if @show_rsync_command
 
       open4 = @open4 || Open4
 
       open4::popen4("sh") do |pid, stdin, stdout, stderr|
-        stdin.puts rsync_command(profile_name)
+        stdin.puts command
         stdin.close
 
         puts stdout.read
@@ -62,19 +62,13 @@ module RubyClone
     def create_rsync_command(profile)
       command = "rsync #{@rsync_options} "
 
-      command << "#{create_exclude_command(profile)} "
-      command << "#{profile.to_folder.to_command} "
+      command << @exclude_paths.map { |e| "--exclude=#{e}" }.join(" ")
+      command << " #{profile.from_folder.to_command}"
+      command << " #{profile.to_folder.to_command}"
+      command << " #{create_ssh_command(profile)}"
 
-      command << "#{create_ssh_command(profile)} "
-      command << "#{profile.from_folder} #{profile.to_folder}"
-
+      command << " #{profile.from_folder} #{profile.to_folder}"
       command.gsub(/\s+/, " ")
-    end
-
-    def create_exclude_command(profile)
-      excludes = ""
-      excludes << @exclude_paths.map {|e| "--exclude=#{e}" }.join(" ")
-      excludes << " #{profile.from_folder.to_command}"
     end
 
     def create_ssh_command(profile)

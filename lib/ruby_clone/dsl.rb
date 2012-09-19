@@ -65,6 +65,10 @@ module RubyClone
         current_object.exclude_paths = path
       end
 
+      define_method :include_pattern do |path|
+        current_object.include_pattern = path
+      end
+
       define_method :show_rsync_command do |value|
         current_object.show_rsync_command = value
       end

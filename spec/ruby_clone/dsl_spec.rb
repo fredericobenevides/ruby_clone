@@ -91,6 +91,23 @@ module RubyClone
         @rsync.rsync_command('backup2').should == "#{@rsync_command} #{@folders}"
       end
 
+      it "should create include just for the profile 'backup1' if include_pattern DSL is setted only in the profile" do
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder') do
+            DummyClass.include_pattern '/include_pattern1'
+          end
+          DummyClass.to('/to_folder')
+        end
+
+        DummyClass.profile('backup2') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder')
+        end
+
+        @rsync.rsync_command('backup1').should == "#{@rsync_command} --include=/include_pattern1 #{@folders}"
+        @rsync.rsync_command('backup2').should == "#{@rsync_command} #{@folders}"
+      end
+
       it "should have the following options '-e ssh user@server:/from_folder /to_folder' when is ssh" do
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder', ssh: "user@server")
@@ -158,6 +175,46 @@ module RubyClone
 
         @rsync.rsync_command('backup1').should == "#{@rsync_command} --exclude=exclude_top_path --exclude=/exclude_path1 #{@folders}"
         @rsync.rsync_command('backup2').should == "#{@rsync_command} --exclude=exclude_top_path #{@folders}"
+      end
+
+    end
+
+    describe "#include_pattern" do
+
+      it "should create include for all profiles if include_pattern DSL is on the top" do
+        DummyClass.include_pattern '/include_top_path'
+
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder')
+        end
+
+        DummyClass.profile('backup2') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder')
+        end
+
+        @rsync.rsync_command('backup1').should == "#{@rsync_command} --include=/include_top_path #{@folders}"
+        @rsync.rsync_command('backup2').should == "#{@rsync_command} --include=/include_top_path #{@folders}"
+      end
+
+      it "should create the include on the top and in profile if include_pattern DSL are setted in the top and in profile" do
+        DummyClass.include_pattern '/include_top_path'
+
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder') do
+            DummyClass.include_pattern '/include_pattern1'
+          end
+          DummyClass.to('/to_folder')
+        end
+
+        DummyClass.profile('backup2') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder')
+        end
+
+        @rsync.rsync_command('backup1').should == "#{@rsync_command} --include=/include_top_path --include=/include_pattern1 #{@folders}"
+        @rsync.rsync_command('backup2').should == "#{@rsync_command} --include=/include_top_path #{@folders}"
       end
 
     end

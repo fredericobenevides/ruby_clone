@@ -10,6 +10,7 @@ module RubyClone
 
     def initialize(output)
       @exclude_paths = []
+      @include_patterns = []
       @output = output
       @show_rsync_command = true
       @profiles = {}
@@ -27,6 +28,10 @@ module RubyClone
 
     def exclude_paths=(path)
       @exclude_paths << path
+    end
+
+    def include_pattern=(path)
+      @include_patterns << path
     end
 
     def rsync_command(profile_name)
@@ -63,6 +68,8 @@ module RubyClone
       command = "rsync #{@rsync_options} "
 
       command << @exclude_paths.map { |e| "--exclude=#{e}" }.join(" ")
+      command << @include_patterns.map { |e| "--include=#{e}" }.join(" ")
+
       command << " #{profile.from_folder.to_command}"
       command << " #{profile.to_folder.to_command}"
       command << " #{create_ssh_command(profile)}"

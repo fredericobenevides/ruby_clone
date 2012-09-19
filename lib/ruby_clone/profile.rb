@@ -5,6 +5,7 @@ module RubyClone
 
     def initialize(path, options = {})
       @exclude_paths = []
+      @include_patterns = []
       @options = options
       @path = path
     end
@@ -13,8 +14,15 @@ module RubyClone
       @exclude_paths << path
     end
 
+    def include_pattern=(path)
+      @include_patterns << path
+    end
+
     def to_command
-      @exclude_paths.map { |e| "--exclude=#{e}" }.join(" ")
+      command = ""
+      command << @include_patterns.map { |e| "--include=#{e}" }.join(" ") + " "
+      command << @exclude_paths.map { |e| "--exclude=#{e}" }.join(" ")
+      command.strip
     end
 
     def ssh?

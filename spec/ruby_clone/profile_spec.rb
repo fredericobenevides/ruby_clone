@@ -31,6 +31,22 @@ module RubyClone
 
         from_folder.to_command.should == '--exclude=/exclude_path1 --exclude=/exclude_path2'
       end
+
+      it "should return '--include=/include_path1 --include=/include_path2' when exclude_paths are added" do
+        from_folder = FromFolder.new('/from_folder')
+        from_folder.include_pattern = '/include_pattern1'
+        from_folder.include_pattern = '/include_pattern2'
+
+        from_folder.to_command.should == '--include=/include_pattern1 --include=/include_pattern2'
+      end
+
+      it "should have space between the commands" do
+        from_folder = FromFolder.new('/from_folder')
+        from_folder.include_pattern = '/include_pattern'
+        from_folder.exclude_paths = '/exclude_path'
+
+        from_folder.to_command.should == '--include=/include_pattern --exclude=/exclude_path'
+      end
     end
 
     describe "#to_s" do

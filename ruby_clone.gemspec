@@ -4,9 +4,9 @@ require File.expand_path('../lib/ruby_clone/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Frederico Benevides"]
   gem.email         = ["fredbene@gmail.com"]
-  gem.description   = %q{Ruby_clone to backup your files using Rsync!}
-  gem.summary       = %q{Ruby_clone is high level script of Rsync. Use Ruby DSL to make all your backups! }
-  gem.homepage      = ""
+  gem.description   = %q{Ruby clone is a command line tool to work with Rsync using DSL!}
+  gem.summary       = %q{Ruby_clone is high level script of Rsync. Use Ruby DSL to work with RSync! }
+  gem.homepage      = "http://github.com/fredericobenevides/ruby_clone"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }

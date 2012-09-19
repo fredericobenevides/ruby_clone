@@ -81,11 +81,11 @@ module RubyClone
       describe "appending commands" do
 
         it "should create with '--exclude=/exclude_path1 --exclude=/exclude_path2' options when setted the excluded path" do
-          @rsync.exclude_paths = '/exclude_path1'
-          @rsync.exclude_paths = '/exclude_path2'
+          @rsync.exclude_pattern = '/exclude_pattern1'
+          @rsync.exclude_pattern = '/exclude_pattern2'
 
           command = @rsync.rsync_command "test_profile"
-          command.should == "#{@rsync_command} --exclude=/exclude_path1 --exclude=/exclude_path2 #{@folders}"
+          command.should == "#{@rsync_command} --exclude=/exclude_pattern1 --exclude=/exclude_pattern2 #{@folders}"
         end
 
         it "should create with '--include' when setted the include pattern" do
@@ -99,8 +99,8 @@ module RubyClone
         describe "FromFolder association" do
 
           it "should appends the commands from 'from_folder#to_commands'" do
-            @rsync.exclude_paths = '/exclude_path1'
-            @rsync.exclude_paths = '/exclude_path2'
+            @rsync.exclude_pattern = '/exclude_pattern1'
+            @rsync.exclude_pattern = '/exclude_pattern2'
 
             from_folder = double(:from_folder).as_null_object
             from_folder.stub(:ssh?).and_return false
@@ -110,15 +110,15 @@ module RubyClone
             @profile.from_folder = from_folder
 
             command = @rsync.rsync_command "test_profile"
-            command.should == "#{@rsync_command} --exclude=/exclude_path1 --exclude=/exclude_path2 from_folder#to_command #{@folders}"
+            command.should == "#{@rsync_command} --exclude=/exclude_pattern1 --exclude=/exclude_pattern2 from_folder#to_command #{@folders}"
           end
         end
 
         describe "ToFolder association" do
 
           it "should call to_folder#to_commands" do
-            @rsync.exclude_paths = '/exclude_path1'
-            @rsync.exclude_paths = '/exclude_path2'
+            @rsync.exclude_pattern = '/exclude_pattern1'
+            @rsync.exclude_pattern = '/exclude_pattern2'
 
             to_folder = double(:to_folder).as_null_object
             to_folder.stub(:ssh?).and_return false
@@ -128,7 +128,7 @@ module RubyClone
             @profile.to_folder = to_folder
 
             command = @rsync.rsync_command "test_profile"
-            command.should == "#{@rsync_command} --exclude=/exclude_path1 --exclude=/exclude_path2 to_folder#to_command #{@folders}"
+            command.should == "#{@rsync_command} --exclude=/exclude_pattern1 --exclude=/exclude_pattern2 to_folder#to_command #{@folders}"
           end
 
         end

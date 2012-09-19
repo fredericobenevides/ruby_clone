@@ -4,14 +4,14 @@ module RubyClone
     attr_accessor :path
 
     def initialize(path, options = {})
-      @exclude_paths = []
+      @exclude_patterns = []
       @include_patterns = []
       @options = options
       @path = path
     end
 
-    def exclude_paths=(path)
-      @exclude_paths << path
+    def exclude_pattern=(path)
+      @exclude_patterns << path
     end
 
     def include_pattern=(path)
@@ -21,7 +21,7 @@ module RubyClone
     def to_command
       command = ""
       command << @include_patterns.map { |e| "--include=#{e}" }.join(" ") + " "
-      command << @exclude_paths.map { |e| "--exclude=#{e}" }.join(" ")
+      command << @exclude_patterns.map { |e| "--exclude=#{e}" }.join(" ")
       command.strip
     end
 

@@ -9,7 +9,7 @@ module RubyClone
     attr_accessor :show_rsync_command
 
     def initialize(output)
-      @exclude_paths = []
+      @exclude_patterns = []
       @include_patterns = []
       @output = output
       @show_rsync_command = true
@@ -26,8 +26,8 @@ module RubyClone
       @last_profile
     end
 
-    def exclude_paths=(path)
-      @exclude_paths << path
+    def exclude_pattern=(path)
+      @exclude_patterns << path
     end
 
     def include_pattern=(path)
@@ -67,7 +67,7 @@ module RubyClone
     def create_rsync_command(profile)
       command = "rsync #{@rsync_options} "
 
-      command << @exclude_paths.map { |e| "--exclude=#{e}" }.join(" ")
+      command << @exclude_patterns.map { |e| "--exclude=#{e}" }.join(" ")
       command << @include_patterns.map { |e| "--include=#{e}" }.join(" ")
 
       command << " #{profile.from_folder.to_command}"

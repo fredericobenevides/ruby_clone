@@ -77,7 +77,7 @@ module RubyClone
       it "should create exclude paths just for the profile 'backup1' if exclude DSL is not on the top" do
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder') do
-            DummyClass.exclude '/exclude_path1'
+            DummyClass.exclude_pattern '/exclude_pattern1'
           end
           DummyClass.to('/to_folder')
         end
@@ -87,7 +87,7 @@ module RubyClone
           DummyClass.to('/to_folder')
         end
 
-        @rsync.rsync_command('backup1').should == "#{@rsync_command} --exclude=/exclude_path1 #{@folders}"
+        @rsync.rsync_command('backup1').should == "#{@rsync_command} --exclude=/exclude_pattern1 #{@folders}"
         @rsync.rsync_command('backup2').should == "#{@rsync_command} #{@folders}"
       end
 
@@ -142,7 +142,7 @@ module RubyClone
     describe "#exclude" do
 
       it "should create exclude paths for all profiles if exclude DSL is on the top" do
-        DummyClass.exclude '/exclude_top_path'
+        DummyClass.exclude_pattern '/exclude_top_path'
 
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder')
@@ -159,11 +159,11 @@ module RubyClone
       end
 
       it "should include the exclude path from the top and profile if exclude DSL are setted in the top and in profile" do
-        DummyClass.exclude 'exclude_top_path'
+        DummyClass.exclude_pattern 'exclude_top_path'
 
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder') do
-            DummyClass.exclude '/exclude_path1'
+            DummyClass.exclude_pattern'/exclude_pattern1'
           end
           DummyClass.to('/to_folder')
         end
@@ -173,7 +173,7 @@ module RubyClone
           DummyClass.to('/to_folder')
         end
 
-        @rsync.rsync_command('backup1').should == "#{@rsync_command} --exclude=exclude_top_path --exclude=/exclude_path1 #{@folders}"
+        @rsync.rsync_command('backup1').should == "#{@rsync_command} --exclude=exclude_top_path --exclude=/exclude_pattern1 #{@folders}"
         @rsync.rsync_command('backup2').should == "#{@rsync_command} --exclude=exclude_top_path #{@folders}"
       end
 

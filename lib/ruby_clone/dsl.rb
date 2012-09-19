@@ -61,8 +61,8 @@ module RubyClone
         current_object.backup = backup
       end
 
-      define_method :exclude do |path|
-        current_object.exclude_paths = path
+      define_method :exclude_pattern do |path|
+        current_object.exclude_pattern = path
       end
 
       define_method :include_pattern do |path|

@@ -14,7 +14,7 @@ module RubyClone
     end
 
     def to_command
-      @exclude_paths.map {|e| "--exclude=#{e}" }.join(" ")
+      @exclude_paths.map { |e| "--exclude=#{e}" }.join(" ")
     end
 
     def ssh?
@@ -85,13 +85,11 @@ module RubyClone
       @path = path
     end
 
-    def suffix
-      suffix = @options[:suffix]
-      "--suffix=#{suffix}" if suffix
-    end
-
     def to_command
-      "-b #{suffix} --backup-dir=#{path}".gsub(/\s+/, " ")
+      command = "-b "
+      command << "--suffix=#{@options[:suffix]} " if @options[:suffix]
+      command << "--backup-dir=#{path} "
+      command.strip
     end
 
     def to_s

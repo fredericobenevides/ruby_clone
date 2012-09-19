@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module RubyClone
 
-  describe "FromFolder" do
+  describe FromFolder do
 
     describe "#ssh?" do
 
@@ -24,7 +24,7 @@ module RubyClone
         from_folder.to_command.should be_empty
       end
 
-      it "should return '--exclude' when added" do
+      it "should return '--exclude=/exclude_path1 --exclude=/exclude_path2' when exclude_paths are added" do
         from_folder = FromFolder.new('/from_folder')
         from_folder.exclude_paths = '/exclude_path1'
         from_folder.exclude_paths = '/exclude_path2'
@@ -47,7 +47,7 @@ module RubyClone
     end
   end
 
-  describe "ToFolder" do
+  describe ToFolder do
 
     describe "#ssh?" do
 
@@ -81,11 +81,14 @@ module RubyClone
 
       describe "Backup association" do
 
-        it "should call the backup#to_command when it's related" do
+        it "should call the backup#to_command when it's associated" do
           to_folder = ToFolder.new('/to_folder/', delete: true)
-          to_folder.backup = Backup.new("/backup")
 
-          to_folder.to_command.should == "--delete -b --backup-dir=/backup"
+          backup = double(:backup)
+          to_folder.backup = backup
+
+          backup.should_receive(:to_command).and_return('backup called')
+          to_folder.to_command
         end
 
       end
@@ -105,7 +108,7 @@ module RubyClone
     end
   end
 
-  describe "Backup" do
+  describe Backup do
 
     describe "#to_command" do
 

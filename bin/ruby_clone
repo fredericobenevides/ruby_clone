@@ -9,5 +9,8 @@ options.parse(ARGV)
 
 if !ARGV.empty?
   load File.expand_path options.configurations[:backup_file]
+
+  rsync = current_rsync
+  rsync.dry_run = options.configurations[:dry_run]
   run_backup ARGV[0]
 end

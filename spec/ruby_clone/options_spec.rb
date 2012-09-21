@@ -50,6 +50,11 @@ module RubyClone
       end
     end
 
+    it "should set dry-run mode when the option is '-d'" do
+      @options.parse(%w[-d])
+      @options.configurations[:dry_run].should be_true
+    end
+
   end
 
 end

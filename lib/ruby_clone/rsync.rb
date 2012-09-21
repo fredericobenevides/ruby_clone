@@ -4,6 +4,7 @@ module RubyClone
 
   class RSync
 
+    attr_accessor :dry_run
     attr_accessor :profiles
     attr_accessor :rsync_options
     attr_accessor :show_rsync_command
@@ -66,6 +67,8 @@ module RubyClone
 
     def create_rsync_command(profile)
       command = "rsync #{@rsync_options} "
+
+      command << "-n " if dry_run
 
       command << @exclude_patterns.map { |e| "--exclude=#{e}" }.join(" ")
       command << @include_patterns.map { |e| "--include=#{e}" }.join(" ")

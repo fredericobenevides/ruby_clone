@@ -189,7 +189,7 @@ module RubyClone
           FakerOpen4.send "#{$1}=", double_object
         end
 
-        FakerOpen4.stdin.should_receive(:puts).with("#{@rsync_command} #{@folders}")
+        FakerOpen4.stdin.should_receive(:puts)
         FakerOpen4.stdin.should_receive(:close)
 
         FakerOpen4.stdout.should_receive(:read)
@@ -248,6 +248,15 @@ module RubyClone
 
         @output.seek 0
         @output.read.should == ""
+      end
+
+      it "should not run when it's in dry-run mode" do
+        @rsync.dry_run = true
+
+        @rsync.run 'test_profile'
+
+        @output.seek 0
+        @output.read.should == "\n#{@rsync_command} -n #{@folders}\n\n"
       end
 
     end

@@ -48,28 +48,28 @@ module RubyClone
 
         it "should raise ArgumentError when trying to run a profile that doesn't exist" do
           lambda do
-            @rsync.run 'any'
-          end.should raise_error(ArgumentError, "Profile not found")
+            @rsync.run 'my_profile'
+          end.should raise_error(ArgumentError, "Profile my_profile not found")
         end
 
-        it "should raise SyntaxError with message 'Empty Profile not allowed for profile with no 'from folder''" do
+        it "should raise SyntaxError with message 'Empty Profile not allowed for profile no_from_folder with no 'from folder''" do
           lambda do
             profile = Profile.new 'no_from_folder'
             profile.to_folder = @to_folder
             @rsync.profiles = profile
 
             @rsync.run 'no_from_folder'
-          end.should raise_error(SyntaxError, "Empty Profile not allowed for profile with no 'from folder'")
+          end.should raise_error(SyntaxError, "Empty Profile not allowed for profile no_from_folder with no 'from folder'")
         end
 
-        it "should raise SyntaxError with message 'Empty Profile not allowed for profile with no 'to folder''" do
+        it "should raise SyntaxError with message 'Empty Profile not allowed for profile no_to_folder with no 'to folder''" do
           lambda do
             profile = Profile.new 'no_to_folder'
             profile.from_folder = @from_folder
             @rsync.profiles = profile
 
             @rsync.run 'no_to_folder'
-          end.should raise_error(SyntaxError, "Empty Profile not allowed for profile with no 'to folder'")
+          end.should raise_error(SyntaxError, "Empty Profile not allowed for profile no_to_folder with no 'to folder'")
         end
       end
 

@@ -38,12 +38,12 @@ module RubyClone
       profile = @profiles[profile_name.to_s]
 
       if profile
-        raise SyntaxError, "Empty Profile not allowed for profile with no 'from folder'" unless profile.from_folder
-        raise SyntaxError, "Empty Profile not allowed for profile with no 'to folder'" unless profile.to_folder
+        raise SyntaxError, "Empty Profile not allowed for profile #{profile} with no 'from folder'" unless profile.from_folder
+        raise SyntaxError, "Empty Profile not allowed for profile #{profile} with no 'to folder'" unless profile.to_folder
 
         create_rsync_command profile
       else
-        raise ArgumentError, "Profile not found"
+        raise ArgumentError, "Profile #{profile_name} not found"
       end
     end
 

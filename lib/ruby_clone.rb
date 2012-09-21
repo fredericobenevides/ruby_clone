@@ -5,3 +5,5 @@ require 'ruby_clone/rsync'
 require 'ruby_clone/dsl'
 
 require 'ruby_clone/profile'
+
+require 'ruby_clone/options'

@@ -4,6 +4,10 @@ require 'ruby_clone'
 
 extend RubyClone::DSL
 
-load ARGV[0]
+options = RubyClone::Options.new(STDOUT)
+options.parse(ARGV)
 
-run_backup ARGV[1]
+if !ARGV.empty?
+  load File.expand_path options.configurations[:backup_file]
+  run_backup ARGV[0]
+end

@@ -4,8 +4,7 @@ module RubyClone
 
   class RSync
 
-    attr_accessor :dry_run
-    attr_accessor :profiles
+    attr_writer :dry_run
 
     def initialize(output)
       @configurations = { options: '-Cav --stats', show_command: true, show_output: true, show_errors: true }
@@ -69,7 +68,7 @@ module RubyClone
     def create_rsync_command(profile)
       command = "rsync #{@configurations[:options]} "
 
-      command << "-n " if dry_run
+      command << "-n " if @dry_run
 
       command << @exclude_patterns.map { |e| "--exclude=#{e}" }.join(" ")
       command << @include_patterns.map { |e| "--include=#{e}" }.join(" ")

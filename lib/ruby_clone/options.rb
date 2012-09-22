@@ -16,11 +16,11 @@ module RubyClone
       opts = OptionParser.new do |opts|
         opts.banner = "Usage: ruby_clone [options] profile"
 
-        opts.on("-b", "--backup-file path", String, "Path to backup file (default is $HOME/ruby_clone)") do |backup_file|
+        opts.on("-b", "--backup-file path", String, "Change the path to backup file (default is #{ENV['HOME']}/.ruby_clone)") do |backup_file|
           @configurations[:backup_file] = backup_file
         end
 
-        opts.on("-d", "--dry-run", String, "Path to backup file (default is $HOME/ruby_clone)") do
+        opts.on("-d", "--dry-run", "Show what would have been transferred") do
           @configurations[:dry_run] = true
         end
 

@@ -69,8 +69,8 @@ module RubyClone
         current_object.include_pattern = path
       end
 
-      define_method :show_rsync_command do |value|
-        current_object.show_rsync_command = value
+      define_method :config do |configurations|
+        current_object.update_configurations configurations
       end
 
     }.call

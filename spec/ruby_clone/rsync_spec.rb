@@ -34,12 +34,23 @@ module RubyClone
       @folders = "/from_folder /to_folder"
     end
 
-    describe "#rsync_options" do
+    describe "#configurations" do
 
-      it "should as default have '-Cav --stats' in rsync options" do
-        @rsync.rsync_options.should == "#{@rsync_options}"
+      it "should as default have '-Cav --stats' in options" do
+        @rsync.instance_eval { @configurations[:options] }.should == "#{@rsync_options}"
       end
 
+      it "should as default have 'true' in show_command" do
+        @rsync.instance_eval { @configurations[:show_command] }.should be_true
+      end
+
+      it "should as default have 'true' in show_output" do
+        @rsync.instance_eval { @configurations[:show_output] }.should be_true
+      end
+
+      it "should as default have 'true' in show_output" do
+        @rsync.instance_eval { @configurations[:show_errors] }.should be_true
+      end
     end
 
     describe "#rsync_command" do
@@ -192,8 +203,8 @@ module RubyClone
         FakerOpen4.stdin.should_receive(:puts)
         FakerOpen4.stdin.should_receive(:close)
 
-        FakerOpen4.stdout.should_receive(:read)
-        FakerOpen4.stderr.should_receive(:read)
+        FakerOpen4.stdout.stub(:read).and_return nil
+        FakerOpen4.stderr.stub(:read).and_return nil
       end
 
       describe "profile of string type" do
@@ -235,20 +246,69 @@ module RubyClone
 
       end
 
-      it "should as default show the rsync command in console" do
-        @rsync.run 'test_profile'
+      describe "changing configurations" do
 
-        @output.seek 0
-        @output.read.should == "\n#{@rsync_command} #{@folders}\n\n"
-      end
+        it "should change the rsync options when configurations has 'optionas' as '-a'" do
+          @rsync.update_configurations options: "-a"
+          @rsync.run 'test_profile'
 
-      it "should not print the rsync command in console when 'show_rsync_command' is false" do
-        @rsync.show_rsync_command = false
-        @rsync.run 'test_profile'
+          @output.seek 0
+          @output.read.should == "\nrsync -a #{@folders}\n\n"
+        end
 
-        @output.seek 0
-        @output.read.should == ""
-      end
+        it "should as default show the rsync command in console" do
+          @rsync.run 'test_profile'
+
+          @output.seek 0
+          @output.read.should == "\n#{@rsync_command} #{@folders}\n\n"
+        end
+
+        it "should not print the rsync command in console when configurations has 'show_command' as false" do
+          @rsync.update_configurations show_command: false
+          @rsync.run 'test_profile'
+
+          @output.seek 0
+          @output.read.should == ""
+        end
+
+        it "should as default output the rsync results in console" do
+          FakerOpen4.stdout.should_receive(:read)
+
+          @rsync.run 'test_profile'
+
+          @output.seek 0
+          @output.read.should == "\n#{@rsync_command} #{@folders}\n\n"
+        end
+
+        it "should not output the rsync results in console when configurations has 'show_output' as false" do
+          FakerOpen4.stdout.should_not_receive(:read)
+
+          @rsync.update_configurations show_output: false
+          @rsync.run 'test_profile'
+
+          @output.seek 0
+          @output.read.should == "\n#{@rsync_command} #{@folders}\n\n"
+        end
+
+        it "should as default output the rsync errors in console" do
+          FakerOpen4.stderr.should_receive(:read)
+
+          @rsync.run 'test_profile'
+
+          @output.seek 0
+          @output.read.should == "\n#{@rsync_command} #{@folders}\n\n"
+        end
+
+        it "should not output the rsync errors in console when configurations has 'show_errors' as false" do
+          FakerOpen4.stderr.should_not_receive(:read)
+
+          @rsync.update_configurations show_errors: false
+          @rsync.run 'test_profile'
+
+          @output.seek 0
+          @output.read.should == "\n#{@rsync_command} #{@folders}\n\n"
+        end
+    end
 
       it "should not run when it's in dry-run mode" do
         @rsync.dry_run = true

@@ -49,26 +49,27 @@ module RubyClone
       end
     end
 
-    describe "#show_rsync_command" do
+    describe "#config" do
 
-      it "should as default show the command in console" do
+      it "should as default have a default configurations" do
+
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder')
           DummyClass.to('/to_folder')
         end
 
-        @rsync.show_rsync_command.should be_true
+        @rsync.instance_eval { @configurations}.should == { options: '-Cav --stats', show_command: true, show_output: true, show_errors: true }
       end
 
-      it "should not show the command in console when 'print_rsync_command' is false" do
-        DummyClass.show_rsync_command false
+      it "should change the default configurations when the config has new values" do
+        DummyClass.config options: '-Cav', show_command: false, show_output: false, show_errors: false
 
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder')
           DummyClass.to('/to_folder')
         end
 
-        @rsync.show_rsync_command.should be_false
+        @rsync.instance_eval { @configurations}.should == { options: '-Cav', show_command: false, show_output: false, show_errors: false }
       end
     end
 

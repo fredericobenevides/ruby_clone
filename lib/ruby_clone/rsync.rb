@@ -70,8 +70,8 @@ module RubyClone
 
       command << "-n " if @dry_run
 
+      command << @include_patterns.map { |e| "--include=#{e}" }.join(" ") + " "
       command << @exclude_patterns.map { |e| "--exclude=#{e}" }.join(" ")
-      command << @include_patterns.map { |e| "--include=#{e}" }.join(" ")
 
       command << " #{profile.from_folder.to_command}"
       command << " #{profile.to_folder.to_command}"

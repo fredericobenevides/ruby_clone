@@ -107,6 +107,14 @@ module RubyClone
           command.should == "#{@rsync_command} --include=/include_pattern1 --include=/include_pattern2 #{@folders}"
         end
 
+        it "should have --include before the --exclude" do
+          @rsync.exclude_pattern = '/exclude_pattern'
+          @rsync.include_pattern = '/include_pattern'
+
+          command = @rsync.rsync_command "test_profile"
+          command.should == "#{@rsync_command} --include=/include_pattern --exclude=/exclude_pattern #{@folders}"
+        end
+
         describe "FromFolder association" do
 
           it "should appends the commands from 'from_folder#to_commands'" do

@@ -7,7 +7,7 @@ module RubyClone
     attr_writer :dry_run
 
     def initialize(output)
-      @configurations = { options: '-Cav --stats', show_command: true, show_output: true, show_errors: true }
+      @configurations = { options: '-Cav --stats --progress', show_command: true, show_output: true, show_errors: true }
       @exclude_patterns = []
       @include_patterns = []
       @output = output

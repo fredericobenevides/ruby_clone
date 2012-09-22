@@ -29,7 +29,7 @@ module RubyClone
       @rsync = RSync.new(@output)
       @rsync.profiles = @profile
 
-      @rsync_options = '-Cav --stats'
+      @rsync_options = '-Cav --stats --progress'
       @rsync_command = "rsync #{@rsync_options}"
       @folders = "/from_folder /to_folder"
     end

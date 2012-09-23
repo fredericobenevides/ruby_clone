@@ -85,7 +85,7 @@ module RubyClone
 
       describe "appending commands" do
 
-        it "should create with '--exclude=/exclude_path1 --exclude=/exclude_path2' options when setted the excluded path" do
+        it "should create with '--exclude=/exclude_path1 --exclude=/exclude_path2' options when set up the excluded path" do
           @rsync.exclude_pattern = '/exclude_pattern1'
           @rsync.exclude_pattern = '/exclude_pattern2'
 
@@ -93,7 +93,7 @@ module RubyClone
           command.should == "#{@rsync_command} --exclude=/exclude_pattern1 --exclude=/exclude_pattern2 #{@folders}"
         end
 
-        it "should create with '--include' when setted the include pattern" do
+        it "should create with '--include' when set up the include pattern" do
           @rsync.include_pattern = '/include_pattern1'
           @rsync.include_pattern = '/include_pattern2'
 

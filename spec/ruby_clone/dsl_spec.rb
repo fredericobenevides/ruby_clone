@@ -92,7 +92,7 @@ module RubyClone
         @rsync.rsync_command('backup2').should == "#{@rsync_command} #{@folders}"
       end
 
-      it "should create include just for the profile 'backup1' if include_pattern DSL is setted only in the profile" do
+      it "should create include just for the profile 'backup1' if include_pattern DSL is set up only in the profile" do
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder') do
             DummyClass.include_pattern '/include_pattern1'
@@ -121,7 +121,7 @@ module RubyClone
 
     describe "#to" do
 
-      it "should have '--delete' when options 'delete' is setted" do
+      it "should have '--delete' when options 'delete' is set up" do
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder')
           DummyClass.to('/to_folder', delete: true)
@@ -130,7 +130,7 @@ module RubyClone
         @rsync.rsync_command('backup1').should == "#{@rsync_command} --delete #{@folders}"
       end
 
-      it "should have '--delete-excluded' when options 'delete_excluded' is setted" do
+      it "should have '--delete-excluded' when options 'delete_excluded' is set up" do
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder')
           DummyClass.to('/to_folder', delete_excluded: true)
@@ -159,7 +159,7 @@ module RubyClone
         @rsync.rsync_command('backup2').should == "#{@rsync_command} --exclude=/exclude_top_path #{@folders}"
       end
 
-      it "should include the exclude path from the top and profile if exclude DSL are setted in the top and in profile" do
+      it "should include the exclude path from the top and profile if exclude DSL are set up in the top and in profile" do
         DummyClass.exclude_pattern 'exclude_top_path'
 
         DummyClass.profile('backup1') do
@@ -199,7 +199,7 @@ module RubyClone
         @rsync.rsync_command('backup2').should == "#{@rsync_command} --include=/include_top_path #{@folders}"
       end
 
-      it "should create the include on the top and in profile if include_pattern DSL are setted in the top and in profile" do
+      it "should create the include on the top and in profile if include_pattern DSL are set up in the top and in profile" do
         DummyClass.include_pattern '/include_top_path'
 
         DummyClass.profile('backup1') do
@@ -222,7 +222,7 @@ module RubyClone
 
     describe "#backup" do
 
-      it "should include the backup commands when the backup is setted" do
+      it "should include the backup commands when the backup is set up" do
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder')
           DummyClass.to('/to_folder') do
@@ -233,7 +233,7 @@ module RubyClone
         @rsync.rsync_command('backup1').should =~ /#{@rsync_command} -b --suffix=_rbcl_\d{8} --backup-dir=\/backup_folder #{@folders}/
       end
 
-      it "should include the suffix when the option suffix: is setted" do
+      it "should include the suffix when the option suffix: is set up" do
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder')
           DummyClass.to('/to_folder') do

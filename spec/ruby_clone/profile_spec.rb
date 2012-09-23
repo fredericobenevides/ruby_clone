@@ -6,12 +6,12 @@ module RubyClone
 
     describe "#ssh?" do
 
-      it "should return true if it has the option ssh setted" do
+      it "should return true if it has the option ssh set up" do
         from_folder = FromFolder.new('/from_folder', ssh: 'user@server')
         from_folder.ssh?.should be_true
       end
 
-      it "should return false if it doesn't have the option ssh setted" do
+      it "should return false if it doesn't have the option ssh set up" do
         from_folder = FromFolder.new('/from_folder')
         from_folder.ssh?.should be_false
       end
@@ -51,12 +51,12 @@ module RubyClone
 
     describe "#to_s" do
 
-      it "should return just the path name if ssh is not setted" do
+      it "should return just the path name if ssh is not set up" do
         from_folder = FromFolder.new('/from_folder')
         from_folder.to_s.should == '/from_folder'
       end
 
-      it "should return just the path name if ssh is setted" do
+      it "should return just the path name if ssh is set up" do
         from_folder = FromFolder.new('/from_folder', ssh: 'user@server')
         from_folder.to_s.should == 'user@server:/from_folder'
       end
@@ -67,12 +67,12 @@ module RubyClone
 
     describe "#ssh?" do
 
-      it "should return true if it has the option ssh setted" do
+      it "should return true if it has the option ssh set up" do
         from_folder = FromFolder.new('/from_folder', ssh: 'user@server')
         from_folder.ssh?.should be_true
       end
 
-      it "should return false if it doesn't have the option ssh setted" do
+      it "should return false if it doesn't have the option ssh set up" do
         from_folder = FromFolder.new('/from_folder')
         from_folder.ssh?.should be_false
       end
@@ -112,12 +112,12 @@ module RubyClone
 
     describe "#to_s" do
 
-      it "should return just the path name if ssh is not setted" do
+      it "should return just the path name if ssh is not set up" do
         to_folder = ToFolder.new('/to_folder')
         to_folder.to_s.should == '/to_folder'
       end
 
-      it "should return just the path name if ssh is setted" do
+      it "should return just the path name if ssh is set up" do
         to_folder = ToFolder.new('/to_folder', ssh: 'user@server')
         to_folder.to_s.should == 'user@server:/to_folder'
       end

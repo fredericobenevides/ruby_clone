@@ -58,18 +58,18 @@ module RubyClone
           DummyClass.to('/to_folder')
         end
 
-        @rsync.instance_eval { @configurations}.should == { options: '-Cav --stats --progress', show_command: true, show_output: true, show_errors: true }
+        @rsync.instance_eval { @configurations }.should == { options: '-Cav --stats --progress', show_command: true, show_output: true }
       end
 
       it "should change the default configurations when the config has new values" do
-        DummyClass.config options: '-Cav', show_command: false, show_output: false, show_errors: false
+        DummyClass.config options: '-Cav', show_command: false, show_output: false
 
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder')
           DummyClass.to('/to_folder')
         end
 
-        @rsync.instance_eval { @configurations}.should == { options: '-Cav', show_command: false, show_output: false, show_errors: false }
+        @rsync.instance_eval { @configurations }.should == { options: '-Cav', show_command: false, show_output: false }
       end
     end
 

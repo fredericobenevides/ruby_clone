@@ -45,10 +45,6 @@ module RubyClone
       it "should as default have 'true' in show_output" do
         @rsync.instance_eval { @configurations[:show_output] }.should be_true
       end
-
-      it "should as default have 'true' in show_output" do
-        @rsync.instance_eval { @configurations[:show_errors] }.should be_true
-      end
     end
 
     describe "#rsync_command" do
@@ -286,27 +282,6 @@ module RubyClone
           FakerPTY.r.should_not_receive(:each)
 
           @rsync.update_configurations show_output: false
-          @rsync.run 'test_profile'
-
-          @output.seek 0
-          @output.read.should == "\n#{@rsync_command} #{@folders}\n\n"
-        end
-
-        it "should as default output the rsync errors in console" do
-          pending "remove the attribute show_erros"
-          FakerOpen4.stderr.should_receive(:read)
-
-          @rsync.run 'test_profile'
-
-          @output.seek 0
-          @output.read.should == "\n#{@rsync_command} #{@folders}\n\n"
-        end
-
-        it "should not output the rsync errors in console when configurations has 'show_errors' as false" do
-          pending "remove the attribute show_erros"
-          FakerOpen4.stderr.should_not_receive(:read)
-
-          @rsync.update_configurations show_errors: false
           @rsync.run 'test_profile'
 
           @output.seek 0

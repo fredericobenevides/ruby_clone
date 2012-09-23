@@ -209,11 +209,11 @@ Here is all the configuration you can set up and improve your **RubyClone** file
       end
     end
 
-* Disabling the output commands of RSync - config show_command: false, show_output: false, show_errors: false
+* Disabling the output commands of RSync - config show_command: false, show_output: false
 
-  **RubyClone** offers the possibility to not show the rsync command generated (show_command), rsync output
-  (show_output) and errors (show_errors). To use it, you need to set up in the top of your **RubyClone** file
-  the 'config' and the commands you want to disable. Example:
+  **RubyClone** offers the possibility to not show the rsync command generated (show_command) and rsync output
+  (show_output). To use it, you need to set up in the top of your **RubyClone** file the 'config' and the commands you
+  want to disable. Example:
 
     config show_command: false, show_output: false
 

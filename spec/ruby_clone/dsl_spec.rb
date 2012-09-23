@@ -9,7 +9,7 @@ module RubyClone
       end
       DummyClass.extend RubyClone::DSL
 
-      @rsync_options = '-Cav --stats --progress'
+      @rsync_options = '-Cavh --stats --progress'
       @rsync_command = "rsync #{@rsync_options}"
       @folders = "/from_folder /to_folder"
     end
@@ -58,7 +58,7 @@ module RubyClone
           DummyClass.to('/to_folder')
         end
 
-        @rsync.instance_eval { @configurations }.should == { options: '-Cav --stats --progress', show_command: true, show_output: true }
+        @rsync.instance_eval { @configurations }.should == { options: @rsync_options, show_command: true, show_output: true }
       end
 
       it "should change the default configurations when the config has new values" do

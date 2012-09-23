@@ -1,4 +1,4 @@
-require 'open4'
+require 'pty'
 
 module RubyClone
 
@@ -52,15 +52,12 @@ module RubyClone
       command = rsync_command(profile_name)
       @output.puts "\n#{command}\n\n" if @configurations[:show_command]
 
-      open4 = @open4 || Open4
+      pty = @pty || PTY
 
-      open4::popen4("sh") do |pid, stdin, stdout, stderr|
-        stdin.puts command
-        stdin.close
-
-        puts stdout.read if @configurations[:show_output]
-        puts stderr.read if @configurations[:show_errors]
+      pty.spawn(command) do |r, w, pid|
+        r.each { |line| print line } if @configurations[:show_output]
       end
+
     end
 
    private

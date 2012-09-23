@@ -1,16 +1,14 @@
 require 'spec_helper'
 require 'stringio'
 
-class FakerOpen4
-
+class FakerPTY
   class << self
-    attr_accessor :pid, :stdin, :stdout, :stderr, :status
+      attr_accessor :r, :w, :pid
 
-    def popen4(output, &block)
-      block.call @pid, @stdin, @stdout, @stderr
-      status
+      def spawn(command, &block)
+        block.call @r, @w, @pid
+      end
     end
-  end
 end
 
 module RubyClone
@@ -201,18 +199,14 @@ module RubyClone
 
 
       before(:each) do
-        @rsync.instance_eval { @open4 = FakerOpen4 }
+        @rsync.instance_eval { @pty = FakerPTY }
 
-        FakerOpen4.methods(false).grep(/(.*)=$/) do
+        FakerPTY.methods(false).grep(/(.*)=$/) do
           double_object = double($1)
-          FakerOpen4.send "#{$1}=", double_object
+          FakerPTY.send "#{$1}=", double_object
         end
 
-        FakerOpen4.stdin.should_receive(:puts)
-        FakerOpen4.stdin.should_receive(:close)
-
-        FakerOpen4.stdout.stub(:read).and_return nil
-        FakerOpen4.stderr.stub(:read).and_return nil
+        FakerPTY.r.stub(:each).and_yield(nil)
       end
 
       describe "profile of string type" do
@@ -280,7 +274,7 @@ module RubyClone
         end
 
         it "should as default output the rsync results in console" do
-          FakerOpen4.stdout.should_receive(:read)
+          FakerPTY.r.should_receive(:each)
 
           @rsync.run 'test_profile'
 
@@ -289,7 +283,7 @@ module RubyClone
         end
 
         it "should not output the rsync results in console when configurations has 'show_output' as false" do
-          FakerOpen4.stdout.should_not_receive(:read)
+          FakerPTY.r.should_not_receive(:each)
 
           @rsync.update_configurations show_output: false
           @rsync.run 'test_profile'
@@ -299,6 +293,7 @@ module RubyClone
         end
 
         it "should as default output the rsync errors in console" do
+          pending "remove the attribute show_erros"
           FakerOpen4.stderr.should_receive(:read)
 
           @rsync.run 'test_profile'
@@ -308,6 +303,7 @@ module RubyClone
         end
 
         it "should not output the rsync errors in console when configurations has 'show_errors' as false" do
+          pending "remove the attribute show_erros"
           FakerOpen4.stderr.should_not_receive(:read)
 
           @rsync.update_configurations show_errors: false

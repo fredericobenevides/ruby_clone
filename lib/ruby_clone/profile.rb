@@ -89,15 +89,26 @@ module RubyClone
     attr_accessor :path
 
     def initialize(path, options = {})
+      @default_suffix = '_rbcl'
       @options = options
       @path = path
     end
 
     def to_command
       command = "-b "
-      command << "--suffix=#{@options[:suffix]} " if @options[:suffix]
+      command << "#{create_suffix} "
       command << "--backup-dir=#{path} "
       command.strip
+    end
+
+   private
+
+    def create_suffix
+      time = @time || Time.now.strftime("%Y%m%d")
+      command = "--suffix="
+      command << "#{@default_suffix}_#{time}" if not @options[:suffix]
+      command << "#{@default_suffix}#{@options[:suffix]}" if @options[:suffix]
+      command
     end
 
     def to_s

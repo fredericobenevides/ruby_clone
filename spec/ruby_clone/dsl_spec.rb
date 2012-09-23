@@ -230,18 +230,18 @@ module RubyClone
           end
         end
 
-        @rsync.rsync_command('backup1').should == "#{@rsync_command} -b --backup-dir=/backup_folder #{@folders}"
+        @rsync.rsync_command('backup1').should =~ /#{@rsync_command} -b --suffix=_rbcl_\d{8} --backup-dir=\/backup_folder #{@folders}/
       end
 
-      it "should include the suffix when the option is setted" do
+      it "should include the suffix when the option suffix: is setted" do
         DummyClass.profile('backup1') do
           DummyClass.from('/from_folder')
           DummyClass.to('/to_folder') do
-            DummyClass.backup('/backup_folder', suffix: 'my_suffix')
+            DummyClass.backup('/backup_folder', suffix: '_my_suffix')
           end
         end
 
-        @rsync.rsync_command('backup1').should == "#{@rsync_command} -b --suffix=my_suffix --backup-dir=/backup_folder #{@folders}"
+        @rsync.rsync_command('backup1').should == "#{@rsync_command} -b --suffix=_rbcl_my_suffix --backup-dir=/backup_folder #{@folders}"
       end
     end
   end

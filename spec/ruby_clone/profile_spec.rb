@@ -128,14 +128,15 @@ module RubyClone
 
     describe "#to_command" do
 
-      it "should as default create the command '-b --backup-dir=/backup'" do
+      it "should as default create the command '-b --suffix=rbcl_Date --backup-dir=/backup' with the ruby_clone suffix and the Date" do
         backup = Backup.new("/backup")
-        backup.to_command.should == "-b --backup-dir=/backup"
+        backup.instance_eval { @time = '20120923'}
+        backup.to_command.should == "-b --suffix=_rbcl_20120923 --backup-dir=/backup"
       end
 
-      it "should create the command '-b --suffix=my_suffix --backup-dir=/backup' when using suffix" do
-        backup = Backup.new("/backup", suffix: "my_suffix")
-        backup.to_command.should == "-b --suffix=my_suffix --backup-dir=/backup"
+      it "should not override the default ruby_clone suffix when using suffix option" do
+        backup = Backup.new("/backup", suffix: "_my_suffix")
+        backup.to_command.should == "-b --suffix=_rbcl_my_suffix --backup-dir=/backup"
       end
     end
 

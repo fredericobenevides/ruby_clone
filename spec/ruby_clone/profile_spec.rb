@@ -68,13 +68,13 @@ module RubyClone
     describe "#ssh?" do
 
       it "should return true if it has the option ssh set up" do
-        from_folder = FromFolder.new('/from_folder', ssh: 'user@server')
-        from_folder.ssh?.should be_true
+        to_folder = ToFolder.new('/to_folder', ssh: 'user@server')
+        to_folder.ssh?.should be_true
       end
 
       it "should return false if it doesn't have the option ssh set up" do
-        from_folder = FromFolder.new('/from_folder')
-        from_folder.ssh?.should be_false
+        to_folder = ToFolder.new('/to_folder')
+        to_folder.ssh?.should be_false
       end
     end
 

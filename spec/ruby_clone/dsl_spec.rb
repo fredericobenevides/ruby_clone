@@ -243,6 +243,17 @@ module RubyClone
 
         @rsync.rsync_command('backup1').should == "#{@rsync_command} -b --suffix=_rbcl_my_suffix --backup-dir=/backup_folder #{@folders}"
       end
+
+      it "should not include any suffix if the option disable_suffix is true" do
+        DummyClass.profile('backup1') do
+          DummyClass.from('/from_folder')
+          DummyClass.to('/to_folder') do
+            DummyClass.backup('/backup_folder', suffix: '_my_suffix', disable_suffix: true)
+          end
+        end
+
+        @rsync.rsync_command('backup1').should == "#{@rsync_command} -b --backup-dir=/backup_folder #{@folders}"
+      end
     end
   end
 end

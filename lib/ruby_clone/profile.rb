@@ -88,7 +88,7 @@ module RubyClone
   class Backup
     attr_accessor :path
 
-    def initialize(path, options = {})
+    def initialize(path, options = { disable_suffix: false })
       @default_suffix = '_rbcl'
       @options = options
       @path = path
@@ -96,7 +96,7 @@ module RubyClone
 
     def to_command
       command = "-b "
-      command << "#{create_suffix} "
+      command << "#{create_suffix} " if not @options[:disable_suffix]
       command << "--backup-dir=#{path} "
       command.strip
     end

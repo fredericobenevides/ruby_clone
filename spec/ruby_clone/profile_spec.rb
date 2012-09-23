@@ -138,6 +138,11 @@ module RubyClone
         backup = Backup.new("/backup", suffix: "_my_suffix")
         backup.to_command.should == "-b --suffix=_rbcl_my_suffix --backup-dir=/backup"
       end
+
+      it "should not create any suffix if the disable_suffix is true" do
+        backup = Backup.new("/backup", suffix: "_my_suffix", disable_suffix: true)
+        backup.to_command.should == "-b --backup-dir=/backup"
+      end
     end
 
   end

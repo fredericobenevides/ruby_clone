@@ -58,6 +58,8 @@ module RubyClone
         r.each { |line| print line } if @configurations[:show_output]
       end
 
+      profile = @profiles[profile_name.to_s]
+      profile.to_folder.delete_files
     end
 
    private

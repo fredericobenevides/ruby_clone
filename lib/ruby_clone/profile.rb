@@ -48,6 +48,10 @@ module RubyClone
       @options = options
     end
 
+    def delete_files
+      @backup.delete_files if @backup
+    end
+
     def to_command
       command = ""
       command << "--delete " if @options[:delete]
@@ -88,10 +92,16 @@ module RubyClone
   class Backup
     attr_accessor :path
 
-    def initialize(path, options = { disable_suffix: false })
+    def initialize(path, options = { })
       @default_suffix = '_rbcl'
-      @options = options
+      @options = { disable_suffix: false, limit: 5 }.merge(options)
       @path = path
+
+    end
+
+    def delete_files
+      backup_utils = @backup_utils || BackupUtils
+      backup_utils.delete_files @path, @default_suffix, @options[:limit] if @options[:limit] != :unlimited
     end
 
     def to_command

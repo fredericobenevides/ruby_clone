@@ -287,7 +287,7 @@ module RubyClone
           @output.seek 0
           @output.read.should == "\n#{@rsync_command} #{@folders}\n\n"
         end
-    end
+      end
 
       it "should not run when it's in dry-run mode" do
         @rsync.dry_run = true
@@ -298,6 +298,11 @@ module RubyClone
         @output.read.should == "\n#{@rsync_command} -n #{@folders}\n\n"
       end
 
+      it "should call profile#to_folder#delete_files" do
+        @to_folder.should_receive(:delete_files)
+
+        @rsync.run 'test_profile'
+      end
     end
 
   end

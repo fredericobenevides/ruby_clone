@@ -74,9 +74,9 @@ can set up was created with this in mind.
 
 Here is all the configuration you can set up and improve your **RubyClone** file.
 
-* Excluding a Pattern - exclude_pattern
+### Excluding a Pattern - exclude_pattern "pattern"
 
-  If you need to exclude folders or files matching a pattern, use the exclude_pattern command.
+  If you need to exclude folders or files matching a pattern, use the 'exclude_pattern command.
   This command can be used in two ways: On the top of **RubyClone** file and/or inside the 'from'.
   Here a complete example:
 
@@ -97,11 +97,11 @@ Here is all the configuration you can set up and improve your **RubyClone** file
   1. 'my_profile1' will exclude only the "top_pattern".
   2. 'my_profile2' will exclude the "top_pattern" and "from_pattern"
 
-* Including a Pattern - include_pattern
+### Including a Pattern - include_pattern "pattern"
 
   Same as the exclude_pattern. If you need to include folders or files matching a pattern, use the
   include_pattern command. This command can be use in two ways: On the top of **RubyClone** file and/or
-  inside the 'from' block. Below a complete example:
+  inside the 'from' block. Example:
 
     include_pattern "top_pattern"
 
@@ -131,11 +131,13 @@ Here is all the configuration you can set up and improve your **RubyClone** file
       to "/my/destination_folder"
     end
 
-* Deleting files that don't exist in source_folder but in destination folder - delete: true
+### Deleting files
+
+1. Deleting files that don't exist in source_folder but in destination folder - delete: true
 
   The basic configuration was created to be a secure configuration. So if you really want to delete files/folders
-  in your destination folder that doesn't exist anymore in your source folder, you'll need to set up 'delete' as
-  true in your **RubyClone** file. Below an example how to do it:
+  in your destination folder that doesn't exist anymore in your source folder, you'll need to set up 'delete: true' in
+  your **RubyClone** file. Below an example how to do it:
 
     profile :my_profile do
       from "/my/source_folder/"
@@ -145,7 +147,7 @@ Here is all the configuration you can set up and improve your **RubyClone** file
   Now all files that exists in "/my/destination_folder/" but "/my/source_folder" will be deleted. If for some
   reason you want to keep some files and delete others, just set up the exclude_pattern inside 'from' block.
 
-* Deleting files that are excluded from source folder to destination folder - delete_excluded: true
+2. Deleting files that are excluded from source folder to destination folder - delete_excluded: true
 
   If you decided to exclude files from the syncronization but they still in your destination folder, you can use
   the 'delete_excluded' to delete this files inside destination folder that are excluded from the source_folder.
@@ -163,10 +165,10 @@ Here is all the configuration you can set up and improve your **RubyClone** file
   **NOTE**: When you use 'delete_excluded :true' you don't need to set up 'delete: true' even the from
   configuration doesn't have the 'exclude_pattern'
 
-* Backuping files - backup "folder"
+### Backuping files - backup "folder"
 
-  If you want to save all the files that get **updated** and **deleted**, you need to set up the 'backup'
-  configuration inside the 'to' block. Example:
+1. If you want to save all the files that get **updated** and **deleted**, you need to set up the 'backup'
+   configuration inside the 'to' block. Example:
 
     profile :my_profile do
       from "/my/source_folder/"
@@ -176,21 +178,17 @@ Here is all the configuration you can set up and improve your **RubyClone** file
     end
 
   Now all the folders/files that get **updated** or **deleted** in the "/my/destination_folder" will be moved to
-  "/my/backup_folder".
+  "/my/backup_folder".  The files moved to "/my/destination_folder" will have a default suffix that is a **RubyClone**
+  control key plus the Date with the format: "yyyyMMdd".
 
-  Since the **RubyClone** uses Ruby, you can use its Time class to set up the date/time in your backup folder.
-  Example:
+  All files that are saved in the "/my/backup_folder" will have a limit of 5 files. So if any file that passed this
+  limit, the old file will be deleted. You can change this limit using the option "limit".
 
-    profile :my_profile do
-      from "/my/source_folder/"
-      to "/my/destination_folder", delete: true do
-        backup "/my/backup_folder_#{Time.now.strftime("%Y%m%d")}"
-      end
-    end
+  **NOTE**: The **RubyClone** control key is a special key to use as a control to remove old duplicated files.
 
-* Changing the suffix of the files inside the backup folder - backup "folder", suffix: "my_suffix"
+2. Changing the suffix of the files inside the backup folder - backup "folder", suffix: "my_suffix"
 
-  If you want to set up a suffix for the files that you backup, you need to set the 'suffix' as a parameter to 'backup'.
+  If you want to change the Date suffix for the files that you backup, you need to set the 'suffix' as a parameter to 'backup'.
   Example:
 
     profile :my_profile do
@@ -200,18 +198,67 @@ Here is all the configuration you can set up and improve your **RubyClone** file
       end
     end
 
-  Another example using suffix with the Time class of Ruby :
+  Another example using suffix with the Time class of Ruby to generate the date with timestamp "yyyyMMdd_hhmmss" :
 
     profile :my_profile do
       from "/my/source_folder/"
       to "/my/destination_folder", delete: true do
-        backup "/my/backup_folder", suffix: "_#{Time.now.strftime("%Y%m%d")}"
+        backup "/my/backup_folder", suffix: "_#{Time.now.strftime("%Y%m%d_%H%M%S")}"
       end
     end
 
-* Disabling the output commands of RSync - config show_command: false, show_output: false
+  **NOTE**: Changing the suffix will not change the **RubyClone** control key. Since this key control how to remove the
+  old duplicated files.
 
-  **RubyClone** offers the possibility to not show the rsync command generated (show_command) and rsync output
+3. Disabling the default suffix - backup "folder", disable_suffix: true
+
+  If for some reason you want to disable the file suffix in the backup folder you can set true for 'default_true'. Doing
+that all the files that are moved to "/my/backup_folder" will have the same name and it will get override by a new file.
+Example:
+
+    profile :my_profile do
+      from "/my/source_folder/"
+      to "/my/destination_folder", delete: true do
+        backup "/my/backup_folder", disable_suffix: true
+      end
+    end
+
+  **NOTE**: This kind of setup will **backup only one file** and nothing more.
+
+4. Changing how many files you want to backup - backup "folder", limit: 10
+
+  **RubyClone** have a default to save 5 files "/my/backup_folder" that have the same name. If you want to change the
+  limit you just need to set up the option limit with the number of files to save.
+  Example:
+
+    profile :my_profile do
+      from "/my/source_folder/"
+      to "/my/destination_folder", delete: true do
+        backup "/my/backup_folder", limit: 20
+      end
+    end
+
+    Now "/my/backup_folder" will save 20 files with the same name.
+
+5. Disabling the limit of files to save. Save unlimited files - backup "folder", limit: :unlimited
+
+  If for some reason you want to backup all files that are **updated** or **deleted** you need to set up the 'limit'
+  option with ':unlimited'
+  Example:
+
+    profile :my_profile do
+      from "/my/source_folder/"
+      to "/my/destination_folder", delete: true do
+        backup "/my/backup_folder", limit: :unlimited
+      end
+    end
+
+  Now all files will be saved, until you change the 'limit' to a specific number to erased all the old files that passed
+  the new limit.
+
+### Disabling the output commands of RSync - config options
+
+1.  **RubyClone** offers the possibility to not show the rsync command generated (show_command) and rsync output
   (show_output). To use it, you need to set up in the top of your **RubyClone** file the 'config' and the commands you
   want to disable. Example:
 
@@ -225,7 +272,7 @@ Here is all the configuration you can set up and improve your **RubyClone** file
   The above config will not show anymore the rsync command and rsync outputs. But errors will keep showing if
   happen.
 
-* Overriding the default configuration of Rsync command - config options: 'override_options'
+2. Overriding the default configuration of Rsync command - config options: 'override_options'
 
   If you need to override the default configurations for RSync you can set up the "config options: 'my_options'".
   Example:
@@ -264,7 +311,7 @@ it will copy the 'source_folder' inside the 'destination_folder. (This behaviour
         exclude_pattern "pattern"
       end
       to "/my/destination_folder", delete_excluded: true do
-        backup "/my/backup_#{Time.now.strftime("%Y%m%d")}"
+        backup "/my/backup"
       end
     end
 

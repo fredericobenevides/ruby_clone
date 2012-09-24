@@ -178,32 +178,23 @@ module RubyClone
     describe "#delete_files" do
 
       it "should call BackupUtils#delete_files" do
-        backup_utils = double(:backup_utils)
-        backup_utils.should_receive(:delete_files).with('/backup', "_rbcl", 5)
+        BackupUtils.should_receive(:delete_files).with('/backup', "_rbcl", 5)
 
         backup = Backup.new("/backup")
-        backup.instance_eval { @backup_utils = backup_utils }
-
         backup.delete_files
       end
 
       it "should call with 10 as limit if limit is set up with 10" do
-        backup_utils = double(:backup_utils)
-        backup_utils.should_receive(:delete_files).with('/backup', "_rbcl", 10)
+        BackupUtils.should_receive(:delete_files).with('/backup', "_rbcl", 10)
 
         backup = Backup.new("/backup", limit: 10)
-        backup.instance_eval { @backup_utils = backup_utils }
-
         backup.delete_files
       end
 
       it "should not call it if the limit options is :unlimited " do
-        backup_utils = double(:backup_utils)
-        backup_utils.should_not_receive(:delete_files)
+        BackupUtils.should_not_receive(:delete_files)
 
         backup = Backup.new("/backup", limit: :unlimited)
-        backup.instance_eval { @backup_utils = backup_utils }
-
         backup.delete_files
       end
     end

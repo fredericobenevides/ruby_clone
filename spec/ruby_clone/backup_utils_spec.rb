@@ -4,7 +4,7 @@ module RubyClone
 
   describe BackupUtils do
 
-    describe "#delete_files" do
+    describe "Deleting files" do
 
       before(:each) do
         @ruby_clone_suffix = '_rbcl'

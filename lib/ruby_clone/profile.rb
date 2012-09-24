@@ -100,8 +100,7 @@ module RubyClone
     end
 
     def delete_files
-      backup_utils = @backup_utils || BackupUtils
-      backup_utils.delete_files @path, @default_suffix, @options[:limit] if @options[:limit] != :unlimited
+      BackupUtils.delete_files @path, @default_suffix, @options[:limit] if @options[:limit] != :unlimited
     end
 
     def to_command

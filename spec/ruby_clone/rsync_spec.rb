@@ -329,19 +329,32 @@ module RubyClone
         @output.read.should == "\n#{@rsync_command} #{@folders}\n\n"
       end
 
-      it "should not run when it's in dry-run mode" do
-        @rsync.dry_run = true
+      describe "dry-run mode" do
 
-        @rsync.run 'test_profile'
+        it "should have the option '-n'" do
+          @rsync.dry_run = true
 
-        @output.seek 0
-        @output.read.should == "\n#{@rsync_command} -n #{@folders}\n\n"
-      end
+          @rsync.run 'test_profile'
 
-      it "should call profile#to_folder#delete_files" do
-        @to_folder.should_receive(:delete_files)
+          @output.seek 0
+          @output.read.should == "\n#{@rsync_command} -n #{@folders}\n\n"
+        end
 
-        @rsync.run 'test_profile'
+        it "should not delete files from backup folder if it's in dry-run mode" do
+          @rsync.dry_run = true
+          @to_folder.should_not_receive(:delete_files)
+
+          @rsync.run 'test_profile'
+
+          @output.seek 0
+          @output.read.should == "\n#{@rsync_command} -n #{@folders}\n\n"
+        end
+
+        it "should call profile#to_folder#delete_files if it's not in dry-run mode" do
+          @to_folder.should_receive(:delete_files)
+
+          @rsync.run 'test_profile'
+        end
       end
     end
 

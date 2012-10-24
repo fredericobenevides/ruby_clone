@@ -54,8 +54,10 @@ module RubyClone
 
       run_with_pty command
 
-      profile = @profiles[profile_name.to_s]
-      profile.to_folder.delete_files
+      unless @dry_run
+        profile = @profiles[profile_name.to_s]
+        profile.to_folder.delete_files
+      end
     end
 
    private

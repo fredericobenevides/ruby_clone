@@ -203,6 +203,8 @@ module RubyClone
         end
 
         FakerPTY.r.stub(:each).and_yield(nil)
+        FakerPTY.r.stub(:eof?).and_return(false, true)
+        FakerPTY.r.stub(:getc).and_return('')
       end
 
       describe "profile of string type" do
@@ -270,12 +272,12 @@ module RubyClone
         end
 
         it "should as default output the rsync results in console" do
-          FakerPTY.r.should_receive(:each)
+          FakerPTY.r.stub(:getc).and_return('my result')
 
           @rsync.run 'test_profile'
 
           @output.seek 0
-          @output.read.should == "\n#{@rsync_command} #{@folders}\n\n"
+          @output.read.should == "\n#{@rsync_command} #{@folders}\n\nmy result"
         end
 
         it "should not output the rsync results in console when configurations has 'show_output' as false" do
@@ -287,6 +289,44 @@ module RubyClone
           @output.seek 0
           @output.read.should == "\n#{@rsync_command} #{@folders}\n\n"
         end
+      end
+
+      it "should allow the user to fill a password" do
+        FakerPTY.r.stub(:eof?).and_return(false, false, true)
+        FakerPTY.r.should_receive(:getc).and_return('Password:', 'my result')
+
+        FakerPTY.w.should_receive(:printf).with('my password')
+
+        STDIN.stub(:gets).and_return('my password')
+
+        @rsync.run 'test_profile'
+
+        @output.seek 0
+        @output.read.should == "\n#{@rsync_command} #{@folders}\n\nPassword: my result"
+      end
+
+      it "should keep allowing the user to fill a password if it's asked again" do
+        FakerPTY.r.stub(:eof?).and_return(false, false, false, false, true)
+        FakerPTY.r.should_receive(:getc).and_return('Password:', 'Password:', 'Password:', 'my result')
+
+        FakerPTY.w.stub(:printf).with('my password')
+
+        STDIN.stub(:gets).and_return('my password')
+
+        @rsync.run 'test_profile'
+
+        @output.seek 0
+        @output.read.should == "\n#{@rsync_command} #{@folders}\n\nPassword: Password: Password: my result"
+      end
+
+      it "should quit the running program after throwing Errno::EIO" do
+        FakerPTY.r.stub(:eof?).and_raise(Errno::EIO)
+        FakerPTY.r.stub(:getc).and_return('my result')
+
+        @rsync.run 'test_profile'
+
+        @output.seek 0
+        @output.read.should == "\n#{@rsync_command} #{@folders}\n\n"
       end
 
       it "should not run when it's in dry-run mode" do

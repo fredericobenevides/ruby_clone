@@ -52,11 +52,7 @@ module RubyClone
       command = rsync_command(profile_name)
       @output.puts "\n#{command}\n\n" if @configurations[:show_command]
 
-      pty = @pty || PTY
-
-      pty.spawn(command) do |r, w, pid|
-        r.each { |line| print line } if @configurations[:show_output]
-      end
+      run_with_pty command
 
       profile = @profiles[profile_name.to_s]
       profile.to_folder.delete_files
@@ -90,5 +86,38 @@ module RubyClone
         "-e ssh"
       end
     end
+
+    def run_with_pty(command)
+      pty = @pty || PTY
+
+      pty.spawn(command) do |r, w, pid|
+        begin
+          loop {
+            buffer = ""
+
+            until r.eof? do
+              char = r.getc
+              buffer << char
+              @output.print char
+
+              break if buffer =~ /password:/i
+            end
+
+            if buffer =~ /password:/i
+              @output.print " "
+
+              `stty -echo`
+              w.printf(STDIN.gets)
+              `stty echo`
+            else
+              break
+            end
+          }
+        rescue Errno::EIO # GNU/Linux raises EIO.
+        end
+      end
+
+    end
+
   end
 end

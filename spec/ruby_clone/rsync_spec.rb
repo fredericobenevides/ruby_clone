@@ -248,7 +248,7 @@ module RubyClone
 
       describe "changing configurations" do
 
-        it "should change the rsync options when configurations has 'optionas' as '-a'" do
+        it "should change the rsync options when configurations has 'options' as '-a'" do
           @rsync.update_configurations options: "-a"
           @rsync.run 'test_profile'
 

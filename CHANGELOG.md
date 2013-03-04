@@ -1,3 +1,9 @@
+## 1.0.3
+
+### bug fix
+  * Fixed the possibility to add a host when connecting to a unknown host
+  * Fixed the encoding that was raising invalid byte sequence.
+
 ## 1.0.2
 
 ### bug fix

@@ -96,16 +96,20 @@ module RubyClone
         begin
           loop {
             buffer = ""
+            output_password = false
 
             until r.eof? do
               char = r.getc
               buffer << char
               @output.print char
 
-              break if buffer =~ /password:/i
+              if buffer.include?('Password:') || buffer.include?('password:') || buffer.include?('want to continue connecting (yes/no)')
+                output_password = true
+                break
+              end
             end
 
-            if buffer =~ /password:/i
+            if output_password
               @output.print " "
 
               `stty -echo`
